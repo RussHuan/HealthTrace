@@ -5,6 +5,7 @@ import { authApi } from '@/api/auth'
 export const useAuthStore = defineStore('auth', () => {
     const user = ref(null)
     const token = ref(localStorage.getItem('token') || null)
+    const userId = ref(localStorage.getItem('userId') || null)
 
     const isAuthenticated = computed(() => !!token.value)
 
@@ -13,8 +14,10 @@ export const useAuthStore = defineStore('auth', () => {
             const response = await authApi.login(credentials)
             if (response.code === 0) {
                 user.value = { id: response.data, username: credentials.username }
+                userId.value = response.data
                 token.value = response.data // 简化版，实际应该使用JWT
                 localStorage.setItem('token', token.value)
+                localStorage.setItem('userId', userId.value)
                 return { success: true }
             } else {
                 return { success: false, message: response.msg }
@@ -39,12 +42,15 @@ export const useAuthStore = defineStore('auth', () => {
 
     const logout = () => {
         user.value = null
+        userId.value = null
         token.value = null
         localStorage.removeItem('token')
+        localStorage.removeItem('userId')
     }
 
     return {
         user,
+        userId,
         token,
         isAuthenticated,
         login,
