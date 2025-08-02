@@ -15,7 +15,7 @@ class Sleep(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # 关联用户
-    user = db.relationship('User', backref=db.backref('sleep_records', lazy=True))
+    user = db.relationship('User', backref=db.backref('sleep_records'))
     
     def calculate_duration(self):
         """计算睡眠时长"""

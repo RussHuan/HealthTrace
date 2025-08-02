@@ -110,6 +110,12 @@ npm run dev
 - `DELETE /sleep/records/{record_id}` - 删除睡眠记录
 - `GET /sleep/stats/{user_id}` - 获取睡眠统计
 
+### 运动记录管理
+
+路由均仿照睡眠管理
+- `POST /exercise/records` - 添加运动记录
+……
+
 ### 响应格式
 
 ```json
@@ -153,6 +159,8 @@ npm run build
 ```
 
 ## 睡眠记录模块
+
+*睡眠质量评分没有必要，将会弃用*
 
 睡眠记录模块是系统的核心功能之一，提供完整的睡眠数据管理：
 

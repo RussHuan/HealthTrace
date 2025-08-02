@@ -6,8 +6,10 @@ from flask_cors import CORS
 from models import db
 from models import user
 from models import sleep
+from models import exercise
 from routes.auth import auth_bp
 from routes.sleep import sleep_bp
+from routes.exercise import exercise_bp
 
 
 def create_app(test_config=None):
@@ -27,6 +29,7 @@ def create_app(test_config=None):
     # 注册蓝图
     app.register_blueprint(auth_bp)
     app.register_blueprint(sleep_bp)
+    app.register_blueprint(exercise_bp)
 
     # 创建数据库表
     with app.app_context():
