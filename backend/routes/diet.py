@@ -33,9 +33,17 @@ def add_diet_record():
         date = datetime.fromisoformat(data['date'].replace('Z', '+00:00')).date()
 
         # 创建记录
+        from models.diet import MealType
+        
+        # 验证 meal_type 是否为有效的枚举值
+        try:
+            meal_type = MealType(data['meal_type'])
+        except ValueError:
+            return error_response(400, f"无效的餐次类型: {data['meal_type']}")
+        
         diet_record = Diet(
             user_id=data['user_id'],
-            meal_type=data['meal_type'],
+            meal_type=meal_type,
             content=data['content'],
             calories=data['calories'],
             date=date
@@ -96,9 +104,9 @@ def get_diet_records(user_id):
         return error_response(500, f"获取饮食记录失败: {str(e)}")
     
 @diet_bp.route('/records/<int:record_id>', methods=['PUT'])
-def update_diet_record(record_id: int):
+def update_diet_record(record_id):
     """更新饮食记录"""
-    data = request.get_json
+    data = request.get_json()
 
     if not data:
         return error_response(400, "请求数据不能为空")
@@ -109,21 +117,27 @@ def update_diet_record(record_id: int):
             return error_response(404, "记录不存在")
         
         # 更新字段
+        if 'meal_type' in data:
+            diet_record.meal_type = data['meal_type']
+        
+        if 'content' in data:
+            diet_record.content = data['content']
+            
+        if 'calories' in data:
+            diet_record.calories = data['calories']
+            
         if 'date' in data:
-            diet_record.date = datetime.fromisoformat(data['date'].replace('Z', '+00:00'))
-
-        if 'notes' in data:
-            diet_record.notes = data['notes']
+            diet_record.date = datetime.fromisoformat(data['date'].replace('Z', '+00:00')).date()
 
         db.session.commit()
 
-        return success_response("记录更新成功", diet_record.to_dict())
+        return success_response("饮食记录更新成功", diet_record.to_dict())
     
     except ValueError as e:
         return error_response(400, f"时间格式错误: {str(e)}")
     except Exception as e:
         db.session.rollback()
-        return error_response(500, f"更新记录失败: {str(e)}")
+        return error_response(500, f"更新饮食记录失败: {str(e)}")
     
 @diet_bp.route('/records/<int:record_id>', methods=['DELETE'])
 def delete_diet_record(record_id):
@@ -143,8 +157,8 @@ def delete_diet_record(record_id):
         return error_response(500, f"删除记录失败: {str(e)}")
     
 @diet_bp.route('/stats/<int:user_id>', methods=['GET'])
-def get_diet_record(user_id):
-    """获取用户饮食信息"""
+def get_diet_stats(user_id):
+    """获取用户饮食统计信息"""
     # 验证用户是否存在
     user = User.query.get(user_id)
     if not user:
@@ -156,7 +170,7 @@ def get_diet_record(user_id):
         end_date = datetime.now()
         start_date = end_date - timedelta(days=days)
 
-        # 查询指定时间范围内的运动记录
+        # 查询指定时间范围内的饮食记录
         records = Diet.query.filter(
             Diet.user_id == user_id,
             Diet.date >= start_date,
@@ -164,7 +178,7 @@ def get_diet_record(user_id):
         ).all()
 
         if not records:
-            return success_response("暂无记录", {
+            return success_response("暂无饮食记录", {
                 "total_records": 0,
                 "total_calories": 0,
                 "average_calories": 0
@@ -179,7 +193,7 @@ def get_diet_record(user_id):
             "average_calories": round(total_calories / len(records), 2)
         }
 
-        return success_response("获取统计数据成功", stats)
+        return success_response("获取饮食统计成功", stats)
     
     except Exception as e:
-        return error_response(500, f"获取运动统计失败: {str(e)}")
+        return error_response(500, f"获取饮食统计失败: {str(e)}")

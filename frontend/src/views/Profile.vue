@@ -264,11 +264,12 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Layout from "@/components/Layout.vue";
 import { useAuthStore } from "@/stores/auth";
 import {Plus} from "@element-plus/icons-vue";
+import { getDietStats } from '@/api/diet';
 
 const authStore = useAuthStore();
 
@@ -286,10 +287,10 @@ const healthGoals = ref({
 });
 
 const overview = ref({
-  usageDays: 15,
-  dietRecords: 45,
-  exerciseRecords: 28,
-  sleepRecords: 15,
+  usageDays: 0,
+  dietRecords: 0,
+  exerciseRecords: 0,
+  sleepRecords: 0,
 });
 
 const passwordForm = ref({
@@ -371,6 +372,20 @@ const deleteAccount = async () => {
     // 用户取消
   }
 };
+
+const fetchDietStats = async () => {
+  try {
+    const userId = 1; // 假设用户ID为1
+    const response = await getDietStats(userId, { days: 7 });
+    overview.value.dietRecords = response.data.total_records;
+  } catch (error) {
+    console.error('获取饮食统计失败:', error);
+  }
+};
+
+onMounted(() => {
+  fetchDietStats();
+});
 </script>
 
 <style scoped>

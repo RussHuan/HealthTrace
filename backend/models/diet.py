@@ -17,6 +17,7 @@ class Diet(db.Model):
     content = db.Column(db.Text, nullable=False)
     calories = db.Column(db.Float, nullable=False)
     date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
+    notes = db.Column(db.Text)  # 添加备注字段
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -31,6 +32,7 @@ class Diet(db.Model):
             "content": self.content,
             "calories": round(self.calories, 2),
             "date": self.date.isoformat() if self.date else None,
+            "notes": self.notes,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None
         }

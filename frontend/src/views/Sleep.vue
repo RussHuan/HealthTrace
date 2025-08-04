@@ -394,6 +394,7 @@ const loadSleepRecords = async () => {
     sleepRecords.value = response.data || [];
   } catch (error) {
     ElMessage.error(error.message || "加载睡眠记录失败");
+    sleepRecords.value = []; // 确保设置为空数组而不是undefined
   } finally {
     tableLoading.value = false;
   }
@@ -408,6 +409,13 @@ const loadSleepStats = async () => {
     sleepStats.value = response.data || {};
   } catch (error) {
     console.error("加载睡眠统计失败:", error);
+    sleepStats.value = {
+      total_records: 0,
+      average_duration: 0,
+      average_quality: 0,
+      best_sleep: null,
+      worst_sleep: null
+    };
   }
 };
 

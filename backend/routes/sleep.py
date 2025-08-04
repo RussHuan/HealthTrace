@@ -187,21 +187,21 @@ def get_sleep_stats(user_id):
         
         # 计算统计信息
         total_duration = sum(record.duration_hours for record in records)
-        average_duration = total_duration / len(records)
+        average_duration = total_duration / len(records) if records else 0
         
         quality_ratings = [record.quality_rating for record in records if record.quality_rating]
         average_quality = sum(quality_ratings) / len(quality_ratings) if quality_ratings else 0
         
         # 找出最佳和最差睡眠记录
-        best_sleep = max(records, key=lambda x: x.duration_hours)
-        worst_sleep = min(records, key=lambda x: x.duration_hours)
+        best_sleep = max(records, key=lambda x: x.duration_hours) if records else None
+        worst_sleep = min(records, key=lambda x: x.duration_hours) if records else None
         
         stats = {
             "total_records": len(records),
             "average_duration": round(average_duration, 2),
             "average_quality": round(average_quality, 1),
-            "best_sleep": best_sleep.to_dict(),
-            "worst_sleep": worst_sleep.to_dict()
+            "best_sleep": best_sleep.to_dict() if best_sleep else None,
+            "worst_sleep": worst_sleep.to_dict() if worst_sleep else None
         }
         
         return success_response("获取睡眠统计成功", stats)

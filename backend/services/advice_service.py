@@ -23,7 +23,7 @@ class Judge():
         
     @staticmethod
     def judge_sleep(ave_sleep: float):
-        if ave_sleep < 7:
+        if ave_sleep < 8:
             return "请增加睡眠时长"
         else:
             return "睡眠充足"

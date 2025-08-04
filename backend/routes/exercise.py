@@ -38,6 +38,8 @@ def add_exercise_record():
             user_id=data['user_id'],
             start_time=start_time,
             end_time=end_time,
+            duration_mimutes=0,  # 临时值，会被calculate_duration()更新
+            type=data.get('type', ''),
             calories=data['calories'],
             notes=data.get('notes', '')
         )       
@@ -184,17 +186,17 @@ def get_exercise_stats(user_id):
         # 计算统计信息
         total_calories = sum(record.calories for record in records)
         total_duration = sum(record.duration_mimutes for record in records)
-        average_duration = total_duration / len(records)       
+        average_duration = total_duration / len(records) if records else 0
         
-        # 找出最佳和最差运动记录，
-        best_exercise = max(records, key=lambda x: x.calories)
-        worst_exercise = min(records, key=lambda x: x.calories)
+        # 找出最佳和最差运动记录
+        best_exercise = max(records, key=lambda x: x.calories) if records else None
+        worst_exercise = min(records, key=lambda x: x.calories) if records else None
         
         stats = {
             "total_records": len(records),
             "average_duration": round(average_duration, 2),
-            "best_exercise": best_exercise.to_dict(),
-            "worst_exercise": worst_exercise.to_dict(),
+            "best_exercise": best_exercise.to_dict() if best_exercise else None,
+            "worst_exercise": worst_exercise.to_dict() if worst_exercise else None,
             "total_calories": round(total_calories, 2)
         }
         

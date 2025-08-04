@@ -138,20 +138,20 @@
       <div style="background-color: transparent; padding: 20px;">
         <a-row :gutter="16" style="display: flex;">
           <a-col :span="12" style="height: 300px;">
-            <a-card :loading="true" title="本周卡路里摄入" style="height: 100%;">
+            <a-card :loading="chartLoading" title="本周卡路里摄入" style="height: 100%;">
               <template #extra><router-link to="/diet">详情</router-link></template>
-              <p>card content</p>
-              <p>card content</p>
-              <p>card content</p>
+              <div v-if="!chartLoading" style="height: 200px; display: flex; align-items: center; justify-content: center;">
+                <p>本周总摄入: {{ weeklyCalories }} kcal</p>
+              </div>
             </a-card>
           </a-col>
 
           <a-col :span="12" style="height: 300px;">
-            <a-card :loading="true" title="运动趋势" style="height: 100%;">
-              <template #extra><router-link to="exercise">详情</router-link></template>
-              <p>card content</p>
-              <p>card content</p>
-              <p>card content</p>
+            <a-card :loading="chartLoading" title="运动趋势" style="height: 100%;">
+              <template #extra><router-link to="/exercise">详情</router-link></template>
+              <div v-if="!chartLoading" style="height: 200px; display: flex; align-items: center; justify-content: center;">
+                <p>本周运动时长: {{ weeklyExercise }} 分钟</p>
+              </div>
             </a-card>
           </a-col>
         </a-row>
@@ -185,16 +185,76 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { ElMessage } from "element-plus";
 import Layout from "@/components/Layout.vue";
 import {Food, Bicycle, Moon, IceDrink, Plus} from "@element-plus/icons-vue";
 import { GithubOutlined } from '@ant-design/icons-vue';
+import { useAuthStore } from "@/stores/auth.js";
+import { getDietStats } from "@/api/diet.js";
+import { getExerciseStats } from "@/api/exercise.js";
+import { getSleepStats } from "@/api/sleep.js";
 
-// 模拟数据
-const todayCalories = ref(1450);
-const todayExercise = ref(25);
-const lastNightSleep = ref(7.5);
-const todayWater = ref(1800);
+const authStore = useAuthStore();
+
+// 统计数据
+const todayCalories = ref(0);
+const todayExercise = ref(0);
+const lastNightSleep = ref(0);
+const todayWater = ref(0);
+const weeklyCalories = ref(0);
+const weeklyExercise = ref(0);
+const chartLoading = ref(true);
+
+// 加载统计数据
+const loadDashboardData = async () => {
+  if (!authStore.userId) {
+    ElMessage.error("请先登录");
+    return;
+  }
+
+  chartLoading.value = true;
+  try {
+    // 并行加载所有统计数据
+    const [dietStats, exerciseStats, sleepStats] = await Promise.all([
+      getDietStats(authStore.userId, 1).catch(() => ({ data: { total_calories: 0 } })),
+      getExerciseStats(authStore.userId, 1).catch(() => ({ data: { average_duration: 0, total_calories: 0 } })),
+      getSleepStats(authStore.userId, 1).catch(() => ({ data: { average_duration: 0 } }))
+    ]);
+
+    // 设置今日数据
+    todayCalories.value = dietStats.data?.total_calories || 0;
+    todayExercise.value = Math.round(exerciseStats.data?.average_duration || 0);
+    lastNightSleep.value = sleepStats.data?.average_duration || 0;
+    todayWater.value = 1800; // 暂时使用固定值
+
+    // 加载本周数据
+    const [weeklyDietStats, weeklyExerciseStats] = await Promise.all([
+      getDietStats(authStore.userId, 7).catch(() => ({ data: { total_calories: 0 } })),
+      getExerciseStats(authStore.userId, 7).catch(() => ({ data: { average_duration: 0, total_calories: 0 } }))
+    ]);
+
+    weeklyCalories.value = weeklyDietStats.data?.total_calories || 0;
+    weeklyExercise.value = Math.round(weeklyExerciseStats.data?.average_duration || 0);
+
+  } catch (error) {
+    console.error("加载仪表盘数据失败:", error);
+    ElMessage.error("加载数据失败");
+    // 设置默认值
+    todayCalories.value = 0;
+    todayExercise.value = 0;
+    lastNightSleep.value = 0;
+    todayWater.value = 1800;
+    weeklyCalories.value = 0;
+    weeklyExercise.value = 0;
+  } finally {
+    chartLoading.value = false;
+  }
+};
+
+onMounted(() => {
+  loadDashboardData();
+});
 </script>
 
 <style scoped>

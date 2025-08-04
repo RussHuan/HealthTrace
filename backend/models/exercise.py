@@ -20,7 +20,7 @@ class Exercise(db.Model):
     def calculate_duration(self):
         """计算运动时长"""
         if self.start_time and self.end_time:
-            duration = self.start_time - self.end_time
+            duration = self.end_time - self.start_time
             if duration.total_seconds() < 0:
                 duration += timedelta(days=1)
             self.duration_mimutes = duration.total_seconds() / 60
@@ -36,6 +36,7 @@ class Exercise(db.Model):
             "end_time": self.end_time.isoformat() if self.end_time else None,
             "duration_mimutes": round(self.duration_mimutes, 2) if self.duration_mimutes else 0,
             "type": self.type,
+            "calories": round(self.calories, 2) if self.calories else 0,
             "notes": self.notes,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None

@@ -1,42 +1,55 @@
-import axios from 'axios'
+// api/auth.js
 
-const api = axios.create({
-    baseURL: '/api',
-    timeout: 10000,
-    headers: {
-        'Content-Type': 'application/json'
-    }
-})
+const API_BASE_URL = 'http://localhost:5000';
 
-// 请求拦截器
-api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('token')
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`
+// 用户登录
+export const login = async (credentials) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/users/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(credentials),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || '登录失败');
         }
-        return config
-    },
-    (error) => {
-        return Promise.reject(error)
-    }
-)
 
-// 响应拦截器
-api.interceptors.response.use(
-    (response) => {
-        return response.data
-    },
-    (error) => {
-        if (error.response?.status === 401) {
-            localStorage.removeItem('token')
-            window.location.href = '/login'
+        return data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+// 用户注册
+export const register = async (userData) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/users/register`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || '注册失败');
         }
-        return Promise.reject(error)
-    }
-)
 
+        return data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+// 导出API对象
 export const authApi = {
-    login: (credentials) => api.post('/users/login', credentials),
-    register: (userData) => api.post('/users/register', userData)
-} 
+    login,
+    register
+}; 

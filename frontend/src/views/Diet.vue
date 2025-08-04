@@ -61,7 +61,7 @@
                   </el-col>
                   <el-col :span="8">
                     <el-form-item>
-                      <el-button type="primary" @click="addDietRecord">
+                      <el-button type="primary" @click="addRecord" :loading="loading">
                         <el-icon><Plus /></el-icon>
                         添加记录
                       </el-button>
@@ -81,27 +81,25 @@
             <a-card title="今日饮食记录" style="height: 100%;">
               <div class="header-actions">
                 <el-tag type="success">总卡路里: {{ totalCalories }} kcal</el-tag>
+                <el-tag type="info">记录数: {{ todayRecords.length }}</el-tag>
               </div>
-              <el-table :data="todayRecords" style="width: 100%">
-                <el-table-column prop="foodName" label="食物名称" />
+              <el-table :data="todayRecords" style="width: 100%" v-loading="tableLoading">
+                <el-table-column prop="content" label="食物名称" />
                 <el-table-column prop="calories" label="卡路里" width="100">
                   <template #default="scope">
                     {{ scope.row.calories }} kcal
                   </template>
                 </el-table-column>
-                <el-table-column prop="quantity" label="份量" width="100">
-                  <template #default="scope"> {{ scope.row.quantity }} 份 </template>
-                </el-table-column>
-                <el-table-column prop="mealType" label="餐次" width="100">
+                <el-table-column prop="meal_type" label="餐次" width="100">
                   <template #default="scope">
-                    <el-tag :type="getMealTypeColor(scope.row.mealType)">
-                      {{ getMealTypeLabel(scope.row.mealType) }}
+                    <el-tag :type="getMealTypeColor(scope.row.meal_type)">
+                      {{ getMealTypeLabel(scope.row.meal_type) }}
                     </el-tag>
                   </template>
                 </el-table-column>
-                <el-table-column prop="time" label="时间" width="120">
+                <el-table-column prop="date" label="日期" width="120">
                   <template #default="scope">
-                    {{ formatTime(scope.row.time) }}
+                    {{ formatDate(scope.row.date) }}
                   </template>
                 </el-table-column>
                 <el-table-column label="操作" width="120">
@@ -109,7 +107,7 @@
                     <el-button
                       type="danger"
                       size="small"
-                      @click="deleteRecord(scope.$index)"
+                      @click="deleteRecord(scope.row.id)"
                     >
                       删除
                     </el-button>
@@ -165,10 +163,14 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import { ElMessage } from "element-plus";
+import { ref, computed, onMounted } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
 import Layout from "@/components/Layout.vue";
 import {Plus} from "@element-plus/icons-vue";
+import { addDietRecord, getDietRecords, deleteDietRecord, getDietStats } from '@/api/diet';
+import { useAuthStore } from "@/stores/auth.js";
+
+const authStore = useAuthStore();
 
 const dietForm = ref({
   foodName: "",
@@ -178,26 +180,90 @@ const dietForm = ref({
   time: null,
 });
 
-const todayRecords = ref([
-  {
-    foodName: "燕麦粥",
-    calories: 150,
-    quantity: 1,
-    mealType: "breakfast",
-    time: "08:00",
-  },
-  {
-    foodName: "鸡胸肉",
-    calories: 200,
-    quantity: 1,
-    mealType: "lunch",
-    time: "12:30",
-  },
-]);
+const todayRecords = ref([]);
+const loading = ref(false);
+const tableLoading = ref(false);
 
 const totalCalories = computed(() => {
   return todayRecords.value.reduce((sum, record) => sum + record.calories, 0);
 });
+
+const fetchDietRecords = async () => {
+  if (!authStore.userId) {
+    ElMessage.error("请先登录");
+    return;
+  }
+
+  tableLoading.value = true;
+  try {
+    const response = await getDietRecords(authStore.userId, { limit: 30 });
+    todayRecords.value = response.data || [];
+  } catch (error) {
+    ElMessage.error(error.message || "获取饮食记录失败");
+    todayRecords.value = []; // 确保设置为空数组而不是undefined
+  } finally {
+    tableLoading.value = false;
+  }
+};
+
+const addRecord = async () => {
+  if (!authStore.userId) {
+    ElMessage.error("请先登录");
+    return;
+  }
+
+  if (!dietForm.value.foodName || !dietForm.value.calories || !dietForm.value.mealType) {
+    ElMessage.warning("请填写完整的饮食信息");
+    return;
+  }
+
+  loading.value = true;
+  try {
+    const newRecord = {
+      user_id: authStore.userId,
+      meal_type: dietForm.value.mealType,
+      content: dietForm.value.foodName,
+      calories: dietForm.value.calories,
+      date: new Date().toISOString().split('T')[0],
+    };
+    
+    await addDietRecord(newRecord);
+    
+    // 重置表单
+    dietForm.value = {
+      foodName: "",
+      calories: 0,
+      quantity: 1,
+      mealType: "",
+      time: null,
+    };
+    
+    ElMessage.success('饮食记录添加成功');
+    await fetchDietRecords();
+  } catch (error) {
+    ElMessage.error(error.message || '添加饮食记录失败');
+  } finally {
+    loading.value = false;
+  }
+};
+
+const deleteRecord = async (recordId) => {
+  try {
+    await ElMessageBox.confirm("确定要删除这条饮食记录吗？", "确认删除", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
+
+    await deleteDietRecord(recordId);
+    ElMessage.success('记录删除成功');
+    await fetchDietRecords();
+  } catch (error) {
+    if (error !== "cancel") {
+      ElMessage.error(error.message || '删除记录失败');
+    }
+  }
+};
 
 const nutrition = computed(() => {
   // 模拟营养数据
@@ -233,50 +299,15 @@ const getMealTypeLabel = (type) => {
   return labels[type] || type;
 };
 
-const formatTime = (time) => {
-  return time;
+const formatDate = (dateStr) => {
+  if (!dateStr) return '-';
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('zh-CN');
 };
 
-const addDietRecord = () => {
-  if (!dietForm.value.foodName || !dietForm.value.calories) {
-    ElMessage.warning("请填写完整的饮食信息");
-    return;
-  }
-
-  const newRecord = {
-    ...dietForm.value,
-    time: dietForm.value.time
-      ? `${dietForm.value.time
-          .getHours()
-          .toString()
-          .padStart(2, "0")}:${dietForm.value.time
-          .getMinutes()
-          .toString()
-          .padStart(2, "0")}`
-      : new Date().toLocaleTimeString("zh-CN", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-  };
-
-  todayRecords.value.push(newRecord);
-
-  // 重置表单
-  dietForm.value = {
-    foodName: "",
-    calories: 0,
-    quantity: 1,
-    mealType: "",
-    time: null,
-  };
-
-  ElMessage.success("饮食记录添加成功");
-};
-
-const deleteRecord = (index) => {
-  todayRecords.value.splice(index, 1);
-  ElMessage.success("记录删除成功");
-};
+onMounted(() => {
+  fetchDietRecords();
+});
 </script>
 
 <style scoped>
