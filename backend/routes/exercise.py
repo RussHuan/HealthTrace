@@ -1,5 +1,5 @@
 # routes/exercise.py
-# TODO 缺少卡路里计算
+# 
 from flask import Blueprint, request, jsonify
 from models import db
 from models.exercise import Exercise
@@ -116,7 +116,7 @@ def update_exercise_record(record_id):
         if 'start_time' in data:
             exercise_record.start_time = datetime.fromisoformat(data['start_time'].replace('Z', '+00:00'))
         
-        if 'wake_time' in data:
+        if 'end_time' in data:
             exercise_record.end_time = datetime.fromisoformat(data['end_time'].replace('Z', '+00:00'))
         
         if 'notes' in data:
@@ -183,7 +183,7 @@ def get_exercise_stats(user_id):
         
         # 计算统计信息
         total_calories = sum(record.calories for record in records)
-        total_duration = sum(record.duration_hours for record in records)
+        total_duration = sum(record.duration_mimutes for record in records)
         average_duration = total_duration / len(records)       
         
         # 找出最佳和最差运动记录，
