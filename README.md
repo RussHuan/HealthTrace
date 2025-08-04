@@ -68,6 +68,7 @@ python __init__.py
 ```bash
 cd frontend
 npm install
+npm install ant-design-vue@4.x --save
 npm run dev
 ```
 
@@ -113,8 +114,9 @@ npm run dev
 ### 运动记录管理
 
 路由均仿照睡眠管理
+
 - `POST /exercise/records` - 添加运动记录
-……
+  ……
 
 ### 响应格式
 
