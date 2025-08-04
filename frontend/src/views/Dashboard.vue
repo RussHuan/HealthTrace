@@ -2,123 +2,152 @@
   <Layout>
     <div class="dashboard">
       <!-- 统计卡片 -->
-      <el-row :gutter="20" class="stats-row">
-        <el-col :span="6">
-          <el-card class="stat-card">
-            <div class="stat-content">
-              <div class="stat-icon diet-icon">
-                <el-icon><Food /></el-icon>
+      <div style="background-color: transparent; padding: 20px;">
+        <a-row :gutter="16" style="display: flex;">
+          <!-- 今日卡路里，手机极窄屏时占满一行 -->
+          <a-col :xs="24" :sm="12" :md="6" style="height: 140px;">
+            <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
+              <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
+                <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
+                  <el-icon><Food /></el-icon>
+                </div>
+                <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
+                  <h3 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    今日卡路里
+                  </h3>
+                  <p style="margin: 0; font-weight: bold; font-size: 26px; line-height: 1.4;
+                            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    {{ todayCalories }} kcal
+                  </p>
+                  <p style="margin: 0; color: #888; font-size: 14px; white-space: nowrap;
+                            overflow: hidden; text-overflow: ellipsis;">
+                    目标: 2000 kcal
+                  </p>
+                </div>
               </div>
-              <div class="stat-info">
-                <h3>今日卡路里</h3>
-                <p class="stat-value">{{ todayCalories }} kcal</p>
-                <p class="stat-target">目标: 2000 kcal</p>
-              </div>
-            </div>
-          </el-card>
-        </el-col>
+            </a-card>
+          </a-col>
 
-        <el-col :span="6">
-          <el-card class="stat-card">
-            <div class="stat-content">
-              <div class="stat-icon exercise-icon">
-                <el-icon><Bicycle /></el-icon>
+          <!-- 运动时长，xs屏隐藏 -->
+          <a-col :xs="0" :sm="12" :md="6" style="height: 140px;" class="hide-xs">
+            <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
+              <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
+                <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
+                  <el-icon><Bicycle /></el-icon>
+                </div>
+                <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
+                  <h3 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    运动时长
+                  </h3>
+                  <p style="margin: 0; font-weight: bold; font-size: 26px; line-height: 1.4;
+                            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    {{ todayExercise }} 分钟
+                  </p>
+                  <p style="margin: 0; color: #888; font-size: 14px; white-space: nowrap;
+                            overflow: hidden; text-overflow: ellipsis;">
+                    目标: 30 分钟
+                  </p>
+                </div>
               </div>
-              <div class="stat-info">
-                <h3>运动时长</h3>
-                <p class="stat-value">{{ todayExercise }} 分钟</p>
-                <p class="stat-target">目标: 30 分钟</p>
-              </div>
-            </div>
-          </el-card>
-        </el-col>
+            </a-card>
+          </a-col>
 
-        <el-col :span="6">
-          <el-card class="stat-card">
-            <div class="stat-content">
-              <div class="stat-icon sleep-icon">
-                <el-icon><Moon /></el-icon>
+          <!-- 睡眠时长，xs和sm屏隐藏 -->
+          <a-col :xs="0" :sm="0" :md="6" style="height: 140px;" class="hide-sm-xs">
+            <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
+              <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
+                <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
+                  <el-icon><Moon /></el-icon>
+                </div>
+                <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
+                  <h3 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    睡眠时长
+                  </h3>
+                  <p style="margin: 0; font-weight: bold; font-size: 26px; line-height: 1.4;
+                            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    {{ lastNightSleep }} 小时
+                  </p>
+                  <p style="margin: 0; color: #888; font-size: 14px; white-space: nowrap;
+                            overflow: hidden; text-overflow: ellipsis;">
+                    目标: 8 小时
+                  </p>
+                </div>
               </div>
-              <div class="stat-info">
-                <h3>睡眠时长</h3>
-                <p class="stat-value">{{ lastNightSleep }} 小时</p>
-                <p class="stat-target">目标: 8 小时</p>
-              </div>
-            </div>
-          </el-card>
-        </el-col>
+            </a-card>
+          </a-col>
 
-        <el-col :span="6">
-          <el-card class="stat-card">
-            <div class="stat-content">
-              <div class="stat-icon water-icon">
-                <el-icon><WaterCup /></el-icon>
+          <!-- 饮水量，xs和sm屏隐藏 -->
+          <a-col :xs="0" :sm="0" :md="6" style="height: 140px;" class="hide-sm-xs">
+            <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
+              <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
+                <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
+                  <el-icon><IceDrink /></el-icon>
+                </div>
+                <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
+                  <h3 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    饮水量
+                  </h3>
+                  <p style="margin: 0; font-weight: bold; font-size: 26px; line-height: 1.4;
+                            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    {{ todayWater }} ml
+                  </p>
+                  <p style="margin: 0; color: #888; font-size: 14px; white-space: nowrap;
+                            overflow: hidden; text-overflow: ellipsis;">
+                    目标: 2000 ml
+                  </p>
+                </div>
               </div>
-              <div class="stat-info">
-                <h3>饮水量</h3>
-                <p class="stat-value">{{ todayWater }} ml</p>
-                <p class="stat-target">目标: 2000 ml</p>
-              </div>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
+            </a-card>
+          </a-col>
+        </a-row>
+      </div>
 
       <!-- 图表区域 -->
-      <el-row :gutter="20" class="charts-row">
-        <el-col :span="12">
-          <el-card class="chart-card">
-            <template #header>
-              <div class="card-header">
-                <span>本周卡路里摄入</span>
-              </div>
-            </template>
-            <div class="chart-placeholder">
-              <el-empty description="图表功能开发中..." />
-            </div>
-          </el-card>
-        </el-col>
+      <div style="background-color: transparent; padding: 20px;">
+        <a-row :gutter="16" style="display: flex;">
+          <a-col :span="12" style="height: 300px;">
+            <a-card :loading="true" title="本周卡路里摄入" style="height: 100%;">
+              <template #extra><router-link to="/diet">详情</router-link></template>
+              <p>card content</p>
+              <p>card content</p>
+              <p>card content</p>
+            </a-card>
+          </a-col>
 
-        <el-col :span="12">
-          <el-card class="chart-card">
-            <template #header>
-              <div class="card-header">
-                <span>运动趋势</span>
-              </div>
-            </template>
-            <div class="chart-placeholder">
-              <el-empty description="图表功能开发中..." />
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
+          <a-col :span="12" style="height: 300px;">
+            <a-card :loading="true" title="运动趋势" style="height: 100%;">
+              <template #extra><router-link to="exercise">详情</router-link></template>
+              <p>card content</p>
+              <p>card content</p>
+              <p>card content</p>
+            </a-card>
+          </a-col>
+        </a-row>
+      </div>
 
       <!-- 快速操作 -->
-      <el-row :gutter="20" class="actions-row">
-        <el-col :span="24">
-          <el-card class="actions-card">
-            <template #header>
-              <div class="card-header">
-                <span>快速操作</span>
+      <div style="background-color: transparent; padding: 20px;">
+        <a-row :gutter="16" style="display: flex;">
+          <a-col :span="24">
+            <a-card title="快速操作" style="height: 100%;">
+              <div class="quick-actions" style="margin-top: 12px;">
+                <el-button type="primary" @click="$router.push('/diet')">
+                  <el-icon><Plus /></el-icon>
+                  记录饮食
+                </el-button>
+                <el-button type="success" @click="$router.push('/exercise')">
+                  <el-icon><Bicycle /></el-icon>
+                  记录运动
+                </el-button>
+                <el-button type="info" @click="$router.push('/sleep')">
+                  <el-icon><Moon /></el-icon>
+                  记录睡眠
+                </el-button>
               </div>
-            </template>
-            <div class="quick-actions">
-              <el-button type="primary" @click="$router.push('/diet')">
-                <el-icon><Plus /></el-icon>
-                记录饮食
-              </el-button>
-              <el-button type="success" @click="$router.push('/exercise')">
-                <el-icon><Bicycle /></el-icon>
-                记录运动
-              </el-button>
-              <el-button type="info" @click="$router.push('/sleep')">
-                <el-icon><Moon /></el-icon>
-                记录睡眠
-              </el-button>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
+            </a-card>
+          </a-col>
+        </a-row>
+      </div>
     </div>
   </Layout>
 </template>
@@ -126,6 +155,7 @@
 <script setup>
 import { ref } from "vue";
 import Layout from "@/components/Layout.vue";
+import {Food, Bicycle, Moon, IceDrink, Plus} from "@element-plus/icons-vue";
 
 // 模拟数据
 const todayCalories = ref(1450);
@@ -139,103 +169,23 @@ const todayWater = ref(1800);
   padding: 0;
 }
 
-.stats-row {
-  margin-bottom: 20px;
+.hide-xs {
+  display: none;
+}
+@media (min-width: 576px) {
+  .hide-xs {
+    display: block;
+  }
 }
 
-.stat-card {
-  height: 120px;
+.hide-sm-xs {
+  display: none;
+}
+@media (min-width: 768px) {
+  .hide-sm-xs {
+    display: block;
+  }
 }
 
-.stat-content {
-  display: flex;
-  align-items: center;
-  height: 100%;
-}
-
-.stat-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 15px;
-  font-size: 24px;
-  color: white;
-}
-
-.diet-icon {
-  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-}
-
-.exercise-icon {
-  background: linear-gradient(135deg, #4ecdc4, #44a08d);
-}
-
-.sleep-icon {
-  background: linear-gradient(135deg, #a8edea, #fed6e3);
-  color: #333;
-}
-
-.water-icon {
-  background: linear-gradient(135deg, #74b9ff, #0984e3);
-}
-
-.stat-info h3 {
-  margin: 0 0 5px 0;
-  font-size: 14px;
-  color: #666;
-  font-weight: normal;
-}
-
-.stat-value {
-  margin: 0 0 5px 0;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-}
-
-.stat-target {
-  margin: 0;
-  font-size: 12px;
-  color: #999;
-}
-
-.charts-row {
-  margin-bottom: 20px;
-}
-
-.chart-card {
-  height: 300px;
-}
-
-.card-header {
-  font-weight: bold;
-  color: #333;
-}
-
-.chart-placeholder {
-  height: 220px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.actions-row {
-  margin-bottom: 20px;
-}
-
-.quick-actions {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.quick-actions .el-button {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 12px 20px;
-}
+/* 你已有样式保持不变 */
 </style>

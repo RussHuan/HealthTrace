@@ -1,267 +1,264 @@
 <template>
   <Layout>
     <div class="profile-page">
-      <el-row :gutter="20">
-        <!-- 个人信息 -->
-        <el-col :span="8">
-          <el-card class="profile-card">
-            <template #header>
-              <div class="card-header">
-                <span>个人信息</span>
-              </div>
-            </template>
+      <!-- 健康设置卡片组合，与健康数据概览宽度保持一致 -->
+      <div style="background-color: transparent; padding: 20px;">
+        <a-row :gutter="16" style="display: flex;">
+          <a-col :span="24">
+            <a-row :gutter="16">
+              <!-- 个人信息 -->
+              <a-col :xs="24" :md="8">
+                <a-card title="个人信息" style="height: 100%;">
+                  <div class="profile-info" style="text-align: center;">
+                    <div class="avatar-section" style="margin-bottom: 16px;">
+                      <el-avatar :size="100" icon="User" />
+                      <h3 style="margin-top: 12px;">{{ authStore.user?.username }}</h3>
+                      <p class="user-id" style="color: #888;">用户ID: {{ authStore.user?.id }}</p>
+                    </div>
 
-            <div class="profile-info">
-              <div class="avatar-section">
-                <el-avatar :size="100" icon="User" />
-                <h3>{{ authStore.user?.username }}</h3>
-                <p class="user-id">用户ID: {{ authStore.user?.id }}</p>
-              </div>
+                    <el-divider style="margin: 16px 0;" />
 
-              <el-divider />
+                    <div class="info-item" style="margin-bottom: 8px;">
+                      <label>注册时间:</label>
+                      <span>{{ registerDate }}</span>
+                    </div>
+                    <div class="info-item" style="margin-bottom: 8px;">
+                      <label>最后登录:</label>
+                      <span>{{ lastLoginDate }}</span>
+                    </div>
+                    <div class="info-item">
+                      <label>账户状态:</label>
+                      <el-tag type="success">正常</el-tag>
+                    </div>
+                  </div>
+                </a-card>
+              </a-col>
 
-              <div class="info-item">
-                <label>注册时间:</label>
-                <span>{{ registerDate }}</span>
-              </div>
+              <!-- 健康目标设置 -->
+              <a-col :xs="24" :md="16">
+                <a-card title="健康目标设置" style="height: 100%;">
+                  <el-form :model="healthGoals" label-width="120px">
+                    <el-row :gutter="20">
+                      <el-col :span="12">
+                        <el-form-item label="每日卡路里目标">
+                          <el-input-number v-model="healthGoals.dailyCalories" :min="1000" :max="5000" />
+                        </el-form-item>
+                      </el-col>
+                      <el-col :span="12">
+                        <el-form-item label="每日运动时长">
+                          <el-input-number v-model="healthGoals.dailyExercise" :min="10" :max="300" />
+                        </el-form-item>
+                      </el-col>
+                    </el-row>
 
-              <div class="info-item">
-                <label>最后登录:</label>
-                <span>{{ lastLoginDate }}</span>
-              </div>
+                    <el-row :gutter="20">
+                      <el-col :span="12">
+                        <el-form-item label="每日睡眠时长">
+                          <el-input-number v-model="healthGoals.dailySleep" :min="6" :max="12" :precision="1" />
+                        </el-form-item>
+                      </el-col>
+                      <el-col :span="12">
+                        <el-form-item label="每日饮水量">
+                          <el-input-number v-model="healthGoals.dailyWater" :min="500" :max="5000" />
+                        </el-form-item>
+                      </el-col>
+                    </el-row>
 
-              <div class="info-item">
-                <label>账户状态:</label>
-                <el-tag type="success">正常</el-tag>
-              </div>
-            </div>
-          </el-card>
-        </el-col>
+                    <el-row :gutter="20">
+                      <el-col :span="12">
+                        <el-form-item label="每周运动天数">
+                          <el-input-number v-model="healthGoals.weeklyExerciseDays" :min="1" :max="7" />
+                        </el-form-item>
+                      </el-col>
+                      <el-col :span="12">
+                        <el-form-item label="体重目标">
+                          <el-input-number v-model="healthGoals.targetWeight" :min="30" :max="200" :precision="1" />
+                        </el-form-item>
+                      </el-col>
+                    </el-row>
 
-        <!-- 健康目标设置 -->
-        <el-col :span="16">
-          <el-card class="goals-card">
-            <template #header>
-              <div class="card-header">
-                <span>健康目标设置</span>
-              </div>
-            </template>
-
-            <el-form :model="healthGoals" label-width="120px">
-              <el-row :gutter="20">
-                <el-col :span="12">
-                  <el-form-item label="每日卡路里目标">
-                    <el-input-number
-                      v-model="healthGoals.dailyCalories"
-                      :min="1000"
-                      :max="5000"
-                      placeholder="卡路里"
-                    />
-                  </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item label="每日运动时长">
-                    <el-input-number
-                      v-model="healthGoals.dailyExercise"
-                      :min="10"
-                      :max="300"
-                      placeholder="分钟"
-                    />
-                  </el-form-item>
-                </el-col>
-              </el-row>
-
-              <el-row :gutter="20">
-                <el-col :span="12">
-                  <el-form-item label="每日睡眠时长">
-                    <el-input-number
-                      v-model="healthGoals.dailySleep"
-                      :min="6"
-                      :max="12"
-                      :precision="1"
-                      placeholder="小时"
-                    />
-                  </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item label="每日饮水量">
-                    <el-input-number
-                      v-model="healthGoals.dailyWater"
-                      :min="500"
-                      :max="5000"
-                      placeholder="毫升"
-                    />
-                  </el-form-item>
-                </el-col>
-              </el-row>
-
-              <el-row :gutter="20">
-                <el-col :span="12">
-                  <el-form-item label="每周运动天数">
-                    <el-input-number
-                      v-model="healthGoals.weeklyExerciseDays"
-                      :min="1"
-                      :max="7"
-                      placeholder="天"
-                    />
-                  </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item label="体重目标">
-                    <el-input-number
-                      v-model="healthGoals.targetWeight"
-                      :min="30"
-                      :max="200"
-                      :precision="1"
-                      placeholder="公斤"
-                    />
-                  </el-form-item>
-                </el-col>
-              </el-row>
-
-              <el-form-item>
-                <el-button type="primary" @click="saveGoals">
-                  <el-icon><Check /></el-icon>
-                  保存目标
-                </el-button>
-                <el-button @click="resetGoals">
-                  <el-icon><Refresh /></el-icon>
-                  重置
-                </el-button>
-              </el-form-item>
-            </el-form>
-          </el-card>
-        </el-col>
-      </el-row>
+                    <el-form-item>
+                      <el-button type="primary" @click="saveGoals">
+                        <el-icon><Check /></el-icon> 保存目标
+                      </el-button>
+                      <el-button @click="resetGoals">
+                        <el-icon><Refresh /></el-icon> 重置
+                      </el-button>
+                    </el-form-item>
+                  </el-form>
+                </a-card>
+              </a-col>
+            </a-row>
+          </a-col>
+        </a-row>
+      </div>
 
       <!-- 健康数据概览 -->
-      <el-card class="overview-card">
-        <template #header>
-          <div class="card-header">
-            <span>健康数据概览</span>
-          </div>
-        </template>
+      <div style="background-color: transparent; padding: 20px;">
+        <a-row :gutter="16" style="display: flex;">
+          <a-col :span="24">
+            <a-card title="健康数据概览" style="height: 100%;">
+            <!-- 健康概览 -->
+            <div style="background-color: transparent; padding: 20px;">
+              <a-row :gutter="16" style="display: flex;">
 
-        <el-row :gutter="20">
-          <el-col :span="6">
-            <div class="overview-item">
-              <div class="overview-icon">
-                <el-icon><Calendar /></el-icon>
-              </div>
-              <div class="overview-content">
-                <h4>使用天数</h4>
-                <p class="overview-value">{{ overview.usageDays }} 天</p>
-              </div>
-            </div>
-          </el-col>
+                <!-- 使用天数 -->
+                <a-col :xs="12" :sm="12" :md="6" style="height: 100px;">
+                  <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
+                    <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
+                      <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
+                        <el-icon><Calendar /></el-icon>
+                      </div>
+                      <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
+                        <h4 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                          使用天数
+                        </h4>
+                        <p style="margin: 0; font-weight: bold; font-size: 24px; line-height: 1.4;
+                                  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                          {{ overview.usageDays }} 天
+                        </p>
+                      </div>
+                    </div>
+                  </a-card>
+                </a-col>
 
-          <el-col :span="6">
-            <div class="overview-item">
-              <div class="overview-icon">
-                <el-icon><Food /></el-icon>
-              </div>
-              <div class="overview-content">
-                <h4>记录饮食</h4>
-                <p class="overview-value">{{ overview.dietRecords }} 次</p>
-              </div>
-            </div>
-          </el-col>
+                <!-- 记录饮食 -->
+                <a-col :xs="12" :sm="12" :md="6" style="height: 100px;">
+                  <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
+                    <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
+                      <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
+                        <el-icon><Food /></el-icon>
+                      </div>
+                      <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
+                        <h4 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                          记录饮食
+                        </h4>
+                        <p style="margin: 0; font-weight: bold; font-size: 24px; line-height: 1.4;
+                                  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                          {{ overview.dietRecords }} 次
+                        </p>
+                      </div>
+                    </div>
+                  </a-card>
+                </a-col>
 
-          <el-col :span="6">
-            <div class="overview-item">
-              <div class="overview-icon">
-                <el-icon><Bicycle /></el-icon>
-              </div>
-              <div class="overview-content">
-                <h4>记录运动</h4>
-                <p class="overview-value">{{ overview.exerciseRecords }} 次</p>
-              </div>
-            </div>
-          </el-col>
+                <!-- 记录运动 -->
+                <a-col :xs="12" :sm="12" :md="6" style="height: 100px;">
+                  <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
+                    <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
+                      <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
+                        <el-icon><Bicycle /></el-icon>
+                      </div>
+                      <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
+                        <h4 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                          记录运动
+                        </h4>
+                        <p style="margin: 0; font-weight: bold; font-size: 24px; line-height: 1.4;
+                                  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                          {{ overview.exerciseRecords }} 次
+                        </p>
+                      </div>
+                    </div>
+                  </a-card>
+                </a-col>
 
-          <el-col :span="6">
-            <div class="overview-item">
-              <div class="overview-icon">
-                <el-icon><Moon /></el-icon>
-              </div>
-              <div class="overview-content">
-                <h4>记录睡眠</h4>
-                <p class="overview-value">{{ overview.sleepRecords }} 次</p>
-              </div>
+                <!-- 记录睡眠 -->
+                <a-col :xs="12" :sm="12" :md="6" style="height: 100px;">
+                  <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
+                    <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
+                      <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
+                        <el-icon><Moon /></el-icon>
+                      </div>
+                      <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
+                        <h4 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                          记录睡眠
+                        </h4>
+                        <p style="margin: 0; font-weight: bold; font-size: 24px; line-height: 1.4;
+                                  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                          {{ overview.sleepRecords }} 次
+                        </p>
+                      </div>
+                    </div>
+                  </a-card>
+                </a-col>
+
+              </a-row>
             </div>
-          </el-col>
-        </el-row>
-      </el-card>
+
+            </a-card>
+          </a-col>
+        </a-row>
+      </div>
 
       <!-- 账户设置 -->
-      <el-card class="settings-card">
-        <template #header>
-          <div class="card-header">
-            <span>账户设置</span>
-          </div>
-        </template>
+      <div style="background-color: transparent; padding: 20px;">
+        <a-row :gutter="16" style="display: flex;">
+          <a-col :span="24">
+            <a-card title="账户设置" style="height: 100%;">
+              <el-row :gutter="20">
+                <el-col :span="12">
+                  <h4>修改密码</h4>
+                  <el-form :model="passwordForm" label-width="100px">
+                    <el-form-item label="当前密码">
+                      <el-input
+                        v-model="passwordForm.currentPassword"
+                        type="password"
+                        show-password
+                        placeholder="请输入当前密码"
+                      />
+                    </el-form-item>
+                    <el-form-item label="新密码">
+                      <el-input
+                        v-model="passwordForm.newPassword"
+                        type="password"
+                        show-password
+                        placeholder="请输入新密码"
+                      />
+                    </el-form-item>
+                    <el-form-item label="确认密码">
+                      <el-input
+                        v-model="passwordForm.confirmPassword"
+                        type="password"
+                        show-password
+                        placeholder="请再次输入新密码"
+                      />
+                    </el-form-item>
+                    <el-form-item>
+                      <el-button type="primary" @click="changePassword">
+                        修改密码
+                      </el-button>
+                    </el-form-item>
+                  </el-form>
+                </el-col>
 
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <h4>修改密码</h4>
-            <el-form :model="passwordForm" label-width="100px">
-              <el-form-item label="当前密码">
-                <el-input
-                  v-model="passwordForm.currentPassword"
-                  type="password"
-                  show-password
-                  placeholder="请输入当前密码"
-                />
-              </el-form-item>
-              <el-form-item label="新密码">
-                <el-input
-                  v-model="passwordForm.newPassword"
-                  type="password"
-                  show-password
-                  placeholder="请输入新密码"
-                />
-              </el-form-item>
-              <el-form-item label="确认密码">
-                <el-input
-                  v-model="passwordForm.confirmPassword"
-                  type="password"
-                  show-password
-                  placeholder="请再次输入新密码"
-                />
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="changePassword">
-                  修改密码
-                </el-button>
-              </el-form-item>
-            </el-form>
-          </el-col>
+                <el-col :span="12">
+                  <h4>数据管理</h4>
+                  <div class="data-actions">
+                    <el-button type="warning" @click="exportData">
+                      <el-icon><Download /></el-icon>
+                      导出数据
+                    </el-button>
+                    <el-button type="danger" @click="clearData">
+                      <el-icon><Delete /></el-icon>
+                      清空数据
+                    </el-button>
+                  </div>
 
-          <el-col :span="12">
-            <h4>数据管理</h4>
-            <div class="data-actions">
-              <el-button type="warning" @click="exportData">
-                <el-icon><Download /></el-icon>
-                导出数据
-              </el-button>
-              <el-button type="danger" @click="clearData">
-                <el-icon><Delete /></el-icon>
-                清空数据
-              </el-button>
-            </div>
+                  <el-divider />
 
-            <el-divider />
-
-            <h4>账户操作</h4>
-            <div class="account-actions">
-              <el-button type="danger" @click="deleteAccount">
-                <el-icon><Warning /></el-icon>
-                删除账户
-              </el-button>
-            </div>
-          </el-col>
-        </el-row>
-      </el-card>
+                  <h4>账户操作</h4>
+                  <div class="account-actions">
+                    <el-button type="danger" @click="deleteAccount">
+                      <el-icon><Warning /></el-icon>
+                      删除账户
+                    </el-button>
+                  </div>
+                </el-col>
+              </el-row>
+            </a-card>
+          </a-col>
+        </a-row>
+      </div>
     </div>
   </Layout>
 </template>
@@ -271,6 +268,7 @@ import { ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Layout from "@/components/Layout.vue";
 import { useAuthStore } from "@/stores/auth";
+import {Plus} from "@element-plus/icons-vue";
 
 const authStore = useAuthStore();
 

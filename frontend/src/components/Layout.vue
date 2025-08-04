@@ -1,193 +1,3 @@
-<!--<template>-->
-<!--  <el-container class="layout-container">-->
-<!--    &lt;!&ndash; 侧边栏 &ndash;&gt;-->
-<!--    <el-aside width="250px" class="sidebar">-->
-<!--      <div class="sidebar-header">-->
-<!--        <h2>HealthTrace</h2>-->
-<!--        <p>健迹</p>-->
-<!--      </div>-->
-
-<!--      <el-menu-->
-<!--        :default-active="$route.path"-->
-<!--        class="sidebar-menu"-->
-<!--        router-->
-<!--        background-color="#001529"-->
-<!--        text-color="#fff"-->
-<!--        active-text-color="#409eff"-->
-<!--      >-->
-<!--        <el-menu-item index="/dashboard">-->
-<!--          <el-icon><DataBoard /></el-icon>-->
-<!--          <span>首页</span>-->
-<!--        </el-menu-item>-->
-
-<!--        <el-menu-item index="/diet">-->
-<!--          <el-icon><Food /></el-icon>-->
-<!--          <span>饮食记录</span>-->
-<!--        </el-menu-item>-->
-
-<!--        <el-menu-item index="/exercise">-->
-<!--          <el-icon><Bicycle /></el-icon>-->
-<!--          <span>运动记录</span>-->
-<!--        </el-menu-item>-->
-
-<!--        <el-menu-item index="/sleep">-->
-<!--          <el-icon><Moon /></el-icon>-->
-<!--          <span>睡眠记录</span>-->
-<!--        </el-menu-item>-->
-
-<!--        <el-menu-item index="/profile">-->
-<!--          <el-icon><User /></el-icon>-->
-<!--          <span>个人资料</span>-->
-<!--        </el-menu-item>-->
-<!--      </el-menu>-->
-<!--    </el-aside>-->
-
-<!--    &lt;!&ndash; 主内容区 &ndash;&gt;-->
-<!--    <el-container>-->
-<!--      &lt;!&ndash; 顶部导航栏 &ndash;&gt;-->
-<!--      <el-header class="header">-->
-<!--        <div class="header-left">-->
-<!--          <h3>{{ pageTitle }}</h3>-->
-<!--        </div>-->
-
-<!--        <div class="header-right">-->
-<!--          <el-dropdown @command="handleCommand">-->
-<!--            <span class="user-dropdown">-->
-<!--              <el-avatar :size="32" icon="User" />-->
-<!--              <span class="username">{{ authStore.user?.username }}</span>-->
-<!--              <el-icon><ArrowDown /></el-icon>-->
-<!--            </span>-->
-<!--            <template #dropdown>-->
-<!--              <el-dropdown-menu>-->
-<!--                <el-dropdown-item command="profile">个人资料</el-dropdown-item>-->
-<!--                <el-dropdown-item command="logout" divided-->
-<!--                  >退出登录</el-dropdown-item-->
-<!--                >-->
-<!--              </el-dropdown-menu>-->
-<!--            </template>-->
-<!--          </el-dropdown>-->
-<!--        </div>-->
-<!--      </el-header>-->
-
-<!--      &lt;!&ndash; 内容区域 &ndash;&gt;-->
-<!--      <el-main class="main-content">-->
-<!--        <slot />-->
-<!--      </el-main>-->
-<!--    </el-container>-->
-<!--  </el-container>-->
-<!--</template>-->
-
-<!--<script setup>-->
-<!--import { computed } from "vue";-->
-<!--import { useRoute, useRouter } from "vue-router";-->
-<!--import { ElMessageBox } from "element-plus";-->
-<!--import { useAuthStore } from "@/stores/auth";-->
-
-<!--const route = useRoute();-->
-<!--const router = useRouter();-->
-<!--const authStore = useAuthStore();-->
-
-<!--const pageTitle = computed(() => {-->
-<!--  const titleMap = {-->
-<!--    "/dashboard": "首页",-->
-<!--    "/diet": "饮食记录",-->
-<!--    "/exercise": "运动记录",-->
-<!--    "/sleep": "睡眠记录",-->
-<!--    "/profile": "个人资料",-->
-<!--  };-->
-<!--  return titleMap[route.path] || "健康追踪";-->
-<!--});-->
-
-<!--const handleCommand = async (command) => {-->
-<!--  if (command === "profile") {-->
-<!--    router.push("/profile");-->
-<!--  } else if (command === "logout") {-->
-<!--    try {-->
-<!--      await ElMessageBox.confirm("确定要退出登录吗？", "提示", {-->
-<!--        confirmButtonText: "确定",-->
-<!--        cancelButtonText: "取消",-->
-<!--        type: "warning",-->
-<!--      });-->
-<!--      authStore.logout();-->
-<!--      router.push("/login");-->
-<!--    } catch {-->
-<!--      // 用户取消-->
-<!--    }-->
-<!--  }-->
-<!--};-->
-<!--</script>-->
-
-<!--<style scoped>-->
-<!--.layout-container {-->
-<!--  height: 100vh;-->
-<!--}-->
-
-<!--.sidebar {-->
-<!--  background-color: #001529;-->
-<!--  color: white;-->
-<!--}-->
-
-<!--.sidebar-header {-->
-<!--  padding: 20px;-->
-<!--  text-align: center;-->
-<!--  border-bottom: 1px solid #1f2937;-->
-<!--}-->
-
-<!--.sidebar-header h2 {-->
-<!--  color: white;-->
-<!--  margin: 0 0 5px 0;-->
-<!--  font-size: 20px;-->
-<!--}-->
-
-<!--.sidebar-header p {-->
-<!--  color: #9ca3af;-->
-<!--  margin: 0;-->
-<!--  font-size: 12px;-->
-<!--}-->
-
-<!--.sidebar-menu {-->
-<!--  border: none;-->
-<!--}-->
-
-<!--.header {-->
-<!--  background-color: white;-->
-<!--  border-bottom: 1px solid #e5e7eb;-->
-<!--  display: flex;-->
-<!--  align-items: center;-->
-<!--  justify-content: space-between;-->
-<!--  padding: 0 20px;-->
-<!--}-->
-
-<!--.header-left h3 {-->
-<!--  margin: 0;-->
-<!--  color: #374151;-->
-<!--  font-size: 18px;-->
-<!--}-->
-
-<!--.user-dropdown {-->
-<!--  display: flex;-->
-<!--  align-items: center;-->
-<!--  cursor: pointer;-->
-<!--  padding: 8px 12px;-->
-<!--  border-radius: 6px;-->
-<!--  transition: background-color 0.2s;-->
-<!--}-->
-
-<!--.user-dropdown:hover {-->
-<!--  background-color: #f3f4f6;-->
-<!--}-->
-
-<!--.username {-->
-<!--  margin: 0 8px;-->
-<!--  color: #374151;-->
-<!--}-->
-
-<!--.main-content {-->
-<!--  background-color: #f9fafb;-->
-<!--  padding: 20px;-->
-<!--}-->
-<!--</style>-->
-
 <template>
   <a-layout style="min-height: 100vh">
     <!-- 侧边栏 -->
@@ -200,11 +10,10 @@
       <div class="title-bar" :class="{ collapsed: collapsed }">
         <img
           class="logo"
-          :class="{ collapsed: collapsed }"
           src="../assets/logo.png"
           alt="logo"
         />
-        <div v-if="!collapsed" class="sidebar-header">
+        <div class="sidebar-header" :class="{ hidden: collapsed }">
           <h2>HealthTrace</h2>
           <p>健迹</p>
         </div>
@@ -271,7 +80,7 @@
 
       <!-- 页脚，可以保留代码B的页脚，也可以删掉 -->
       <a-layout-footer style="text-align: center">
-        Ant Design ©2018 Created by Ant UED
+        HealthTrace ©2025 健迹 — 让健康管理更智能
       </a-layout-footer>
     </a-layout>
   </a-layout>
@@ -312,7 +121,7 @@ const pageTitle = computed(() => {
     "/diet": "饮食记录",
     "/exercise": "运动记录",
     "/sleep": "睡眠记录",
-    "/profile": "个人资料",
+    "/profile": "个人中心",
   };
   return titleMap[route.path] || "健康追踪";
 });
@@ -359,10 +168,13 @@ const handleCommand = async (command: string) => {
   padding: 20px;
   color: #ffffff;
   transition: all 0.3s;
+  justify-content: flex-start; /* 默认左对齐 */
 }
+
 .title-bar.collapsed {
-  justify-content: center;
+  justify-content: center; /* 收起时居中 */
 }
+
 .logo {
   height: 56px;
   margin-right: 16px;
@@ -383,6 +195,33 @@ const handleCommand = async (command: string) => {
   font-size: 14px;
 }
 
+/* sidebar header 过渡效果 */
+.sidebar-header {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  white-space: nowrap; /* 防止文字折行 */
+}
+
+.sidebar-header.hidden {
+  opacity: 0;
+  transform: translateX(-10px);
+  pointer-events: none;
+  width: 0;
+  overflow: hidden;
+}
+
+
+/* logo 不要动态调整大小 */
+.logo {
+  height: 56px;
+  margin-right: 16px;
+  transition: height 0.3s ease;
+}
+.title-bar.collapsed .logo {
+  margin-right: 0;
+}
+
 /* 调整菜单整体字号 */
 :deep(.ant-menu) {
   font-size: 16px; /* 菜单文字更大 */
@@ -391,6 +230,27 @@ const handleCommand = async (command: string) => {
 /* 调整菜单图标大小 */
 :deep(.ant-menu .anticon) {
   font-size: 18px;
+}
+
+/* 固定侧边栏 */
+:deep(.ant-layout-sider) {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  overflow: auto;
+  z-index: 10;
+}
+
+/* 内容区随 collapsed 动态移动，并加过渡 */
+:deep(.ant-layout) {
+  margin-left: 260px; /* 展开时的宽度 */
+  transition: margin-left 0.3s ease;
+}
+
+/* 收起时调整 margin-left */
+:deep(.ant-layout-sider-collapsed) + .ant-layout {
+  margin-left: 80px; /* 收起后的宽度 */
 }
 
 /* 头部样式（代码A的header） */
