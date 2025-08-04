@@ -4,18 +4,14 @@
     <a-layout-sider
       v-model:collapsed="collapsed"
       collapsible
-      :width="260"
+      :width="siderWidth"
       :collapsed-width="80"
     >
       <div class="title-bar" :class="{ collapsed: collapsed }">
-        <img
-          class="logo"
-          src="../assets/logo.png"
-          alt="logo"
-        />
+        <img class="logo" src="../assets/logo.png" alt="logo" />
         <div class="sidebar-header" :class="{ hidden: collapsed }">
           <h2>HealthTrace</h2>
-          <p>健迹</p>
+          <p>健迹：让健康有迹可循</p>
         </div>
       </div>
 
@@ -25,32 +21,24 @@
         mode="inline"
         @click="onMenuClick"
       >
-        <a-menu-item key="1">
-          <DesktopOutlined />
-          <span>首页</span>
-        </a-menu-item>
-        <a-menu-item key="2">
-          <RestOutlined />
-          <span>睡眠记录</span>
-        </a-menu-item>
-        <a-menu-item key="3">
-          <ThunderboltOutlined />
-          <span>运动记录</span>
-        </a-menu-item>
-        <a-menu-item key="4">
-          <AppleOutlined />
-          <span>饮食记录</span>
-        </a-menu-item>
-        <a-menu-item key="5">
-          <UserOutlined />
-          <span>个人中心</span>
+        <a-menu-item
+          v-for="item in menuItems"
+          :key="item.key"
+          @mouseenter="hoverKey = item.key"
+          @mouseleave="hoverKey = null"
+          :class="{
+            hovered: hoverKey === item.key && !collapsed
+          }"
+        >
+          <component :is="item.icon" />
+          <span>{{ item.label }}</span>
         </a-menu-item>
       </a-menu>
     </a-layout-sider>
 
     <!-- 主体内容区域 -->
-    <a-layout>
-      <!-- 头部：使用代码A的顶部导航栏 -->
+    <a-layout :style="{ marginLeft: collapsed ? '80px' : siderWidth + 'px' }">
+      <!-- 头部 -->
       <a-layout-header class="header">
         <div class="header-left">
           <h3>{{ pageTitle }}</h3>
@@ -73,14 +61,14 @@
         </div>
       </a-layout-header>
 
-      <!-- 内容区：使用代码A的主内容区 -->
+      <!-- 内容区 -->
       <a-layout-content class="main-content">
         <slot />
       </a-layout-content>
 
-      <!-- 页脚，可以保留代码B的页脚，也可以删掉 -->
+      <!-- 页脚 -->
       <a-layout-footer style="text-align: center">
-        HealthTrace ©2025 健迹 — 让健康管理更智能
+        HealthTrace ©2025 健迹 — 让健康有迹可循
       </a-layout-footer>
     </a-layout>
   </a-layout>
@@ -94,20 +82,32 @@ import {
   UserOutlined,
   DesktopOutlined,
 } from "@ant-design/icons-vue";
-import { ref, computed } from "vue";
+import {ref, computed, watch} from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { ElMessageBox } from "element-plus";
 import { useAuthStore } from "@/stores/auth";
+import { ArrowDown } from "@element-plus/icons-vue";
 
 const collapsed = ref(false);
 const selectedKeys = ref(["1"]);
+const hoverKey = ref<string | null>(null);
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 
-// 根据路由自动同步菜单选中项
-const routeKeyMap = {
+const menuItems = [
+  { key: "1", label: "首页", icon: DesktopOutlined },
+  { key: "2", label: "睡眠记录", icon: RestOutlined },
+  { key: "3", label: "运动记录", icon: ThunderboltOutlined },
+  { key: "4", label: "饮食记录", icon: AppleOutlined },
+  { key: "5", label: "个人中心", icon: UserOutlined },
+];
+
+// *** 修改这里，固定宽度 ***
+const siderWidth = computed(() => (collapsed.value ? 80 : 260));
+
+const routeKeyMap: Record<string, string> = {
   "/dashboard": "1",
   "/sleep": "2",
   "/exercise": "3",
@@ -116,7 +116,7 @@ const routeKeyMap = {
 };
 
 const pageTitle = computed(() => {
-  const titleMap = {
+  const titleMap: Record<string, string> = {
     "/dashboard": "首页",
     "/diet": "饮食记录",
     "/exercise": "运动记录",
@@ -129,8 +129,7 @@ const pageTitle = computed(() => {
 selectedKeys.value = [routeKeyMap[route.path] || "1"];
 
 const onMenuClick = (info: { key: string }) => {
-  // 跳转对应路由
-  const keyToRoute = {
+  const keyToRoute: Record<string, string> = {
     "1": "/dashboard",
     "2": "/sleep",
     "3": "/exercise",
@@ -168,11 +167,11 @@ const handleCommand = async (command: string) => {
   padding: 20px;
   color: #ffffff;
   transition: all 0.3s;
-  justify-content: flex-start; /* 默认左对齐 */
+  justify-content: flex-start;
 }
 
 .title-bar.collapsed {
-  justify-content: center; /* 收起时居中 */
+  justify-content: center;
 }
 
 .logo {
@@ -180,27 +179,30 @@ const handleCommand = async (command: string) => {
   margin-right: 16px;
   transition: all 0.3s;
 }
-.logo.collapsed {
-  height: 48px;
-  margin: 0;
-}
+
 .sidebar-header h2 {
-  color: white;
+  font-family: "Poppins", sans-serif;
+  color: transparent;
+  background: linear-gradient(90deg, #ffde59, #38b6ff);
+  -webkit-background-clip: text;
+  background-clip: text;
   margin: 0 0 6px 0;
-  font-size: 22px;
+  font-size: 24px;
+  font-weight: 800;
 }
+
 .sidebar-header p {
+  font-family: "Noto Sans SC", sans-serif;
   color: #c0c0c0;
   margin: 0;
   font-size: 14px;
 }
 
-/* sidebar header 过渡效果 */
 .sidebar-header {
   opacity: 1;
   transform: translateX(0);
   transition: opacity 0.3s ease, transform 0.3s ease;
-  white-space: nowrap; /* 防止文字折行 */
+  white-space: nowrap;
 }
 
 .sidebar-header.hidden {
@@ -210,7 +212,6 @@ const handleCommand = async (command: string) => {
   width: 0;
   overflow: hidden;
 }
-
 
 /* logo 不要动态调整大小 */
 .logo {
@@ -224,7 +225,7 @@ const handleCommand = async (command: string) => {
 
 /* 调整菜单整体字号 */
 :deep(.ant-menu) {
-  font-size: 16px; /* 菜单文字更大 */
+  font-size: 16px;
 }
 
 /* 调整菜单图标大小 */
@@ -240,20 +241,28 @@ const handleCommand = async (command: string) => {
   height: 100vh;
   overflow: auto;
   z-index: 10;
+  transition: width 0.3s ease;
 }
 
-/* 内容区随 collapsed 动态移动，并加过渡 */
+/* 取消菜单项整体放大 */
+:deep(.ant-menu-item.hovered) {
+  transform: none !important;
+}
+
+/* 只放大菜单项内的图标和文字 */
+:deep(.ant-menu-item.hovered) .anticon,
+:deep(.ant-menu-item.hovered) span {
+  transition: transform 0.3s ease;
+  transform-origin: left center;
+  transform: scale(1.15);
+}
+
+/* 内容区随 collapsed 和 siderWidth 动态移动 */
 :deep(.ant-layout) {
-  margin-left: 260px; /* 展开时的宽度 */
   transition: margin-left 0.3s ease;
 }
 
-/* 收起时调整 margin-left */
-:deep(.ant-layout-sider-collapsed) + .ant-layout {
-  margin-left: 80px; /* 收起后的宽度 */
-}
-
-/* 头部样式（代码A的header） */
+/* 头部样式 */
 .header {
   background-color: white;
   border-bottom: 1px solid #e5e7eb;
@@ -288,10 +297,10 @@ const handleCommand = async (command: string) => {
   color: #374151;
 }
 
-/* 内容区样式（代码A的main-content） */
+/* 内容区样式 */
 .main-content {
   background-color: #f9fafb;
   padding: 20px;
-  min-height: calc(100vh - 64px - 70px); /* 减去 header 和 footer 高度 */
+  min-height: calc(100vh - 64px - 70px);
 }
 </style>

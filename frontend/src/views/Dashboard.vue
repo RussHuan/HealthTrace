@@ -1,6 +1,38 @@
 <template>
   <Layout>
     <div class="dashboard">
+      <div style="padding: 20px;">
+        <a-row :gutter="16">
+          <a-col :span="24">
+            <a-carousel autoplay effect="fade">
+              <div>
+                <img src="/images/banner1.jpg" alt="banner1" class="carousel-img">
+              </div>
+              <div>
+                <img src="/images/banner2.jpg" alt="banner1" class="carousel-img">
+              </div>
+              <div>
+                <img src="/images/banner3.jpg" alt="banner1" class="carousel-img">
+              </div>
+              <div class="developer-slide">
+                <h3>关注我们：</h3>
+                <div class="dev-links">
+                  <a href="https://github.com/buuyii" target="_blank">
+                    <GithubOutlined /> buuyii
+                  </a>
+                  <a href="https://github.com/Wh04m1777" target="_blank">
+                    <GithubOutlined /> Wh04m1777
+                  </a>
+                  <a href="https://github.com/BaconToast-pro" target="_blank">
+                    <GithubOutlined /> BaconToast-pro
+                  </a>
+                </div>
+              </div>
+            </a-carousel>
+          </a-col>
+        </a-row>
+      </div>
+
       <!-- 统计卡片 -->
       <div style="background-color: transparent; padding: 20px;">
         <a-row :gutter="16" style="display: flex;">
@@ -156,6 +188,7 @@
 import { ref } from "vue";
 import Layout from "@/components/Layout.vue";
 import {Food, Bicycle, Moon, IceDrink, Plus} from "@element-plus/icons-vue";
+import { GithubOutlined } from '@ant-design/icons-vue';
 
 // 模拟数据
 const todayCalories = ref(1450);
@@ -187,5 +220,56 @@ const todayWater = ref(1800);
   }
 }
 
-/* 你已有样式保持不变 */
+:deep(.slick-slide) {
+  text-align: center;
+  background: #364d79;
+  overflow: hidden;
+}
+:deep(.slick-slide h3) {
+  color: #fff;
+}
+
+.dashboard {
+  padding: 0;
+}
+
+.carousel-img {
+  width: 100%;
+  height: 200px; /* 可调 */
+  object-fit: cover; /* 保证图片不变形 */
+  display: block;
+}
+
+.developer-slide {
+  background: #364d79;
+  min-height: 200px;
+  color: #fff;
+  text-align: center;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.developer-slide h3 {
+  font-size: 22px;
+  margin-bottom: 12px;
+}
+
+.dev-links {
+  margin-top: 12px;
+}
+
+.dev-links a {
+  display: inline-block;
+  margin: 0 12px;
+  font-size: 18px;
+  color: #fff;
+  text-decoration: underline;
+}
+
+.dev-links a:hover {
+  color: #91d5ff;
+}
+
 </style>

@@ -92,25 +92,25 @@
                 <el-tag type="success">总时长: {{ totalDuration }} 分钟</el-tag>
                 <el-tag type="warning">消耗: {{ totalCalories }} kcal</el-tag>
               </div>
-              <el-table :data="todayRecords" style="width: 100%">
-                <el-table-column prop="type" label="运动类型" width="120">
+              <el-table :data="todayRecords" style="width: 100%" :fit="true">
+                <el-table-column prop="type" label="运动类型">
                   <template #default="scope">
                     <el-tag :type="getExerciseTypeColor(scope.row.type)">
                       {{ getExerciseTypeLabel(scope.row.type) }}
                     </el-tag>
                   </template>
                 </el-table-column>
-                <el-table-column prop="duration" label="时长" width="100">
+                <el-table-column prop="duration" label="时长">
                   <template #default="scope">
                     {{ scope.row.duration }} 分钟
                   </template>
                 </el-table-column>
-                <el-table-column prop="calories" label="消耗卡路里" width="120">
+                <el-table-column prop="calories" label="消耗卡路里">
                   <template #default="scope">
                     {{ scope.row.calories }} kcal
                   </template>
                 </el-table-column>
-                <el-table-column prop="intensity" label="强度" width="100">
+                <el-table-column prop="intensity" label="强度">
                   <template #default="scope">
                     <el-tag
                       :type="getIntensityColor(scope.row.intensity)"
