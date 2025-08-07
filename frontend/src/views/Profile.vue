@@ -12,8 +12,8 @@
                   <div class="profile-info" style="text-align: center;">
                     <div class="avatar-section" style="margin-bottom: 16px;">
                       <el-avatar :size="100" icon="User" />
-                      <h3 style="margin-top: 12px;">{{ authStore.user?.username }}</h3>
-                      <p class="user-id" style="color: #888;">用户ID: {{ authStore.user?.id }}</p>
+                      <h3 style="margin-top: 12px;">{{ authStore.user?.username || '未登录' }}</h3>
+                      <p class="user-id" style="color: #888;">用户ID: {{ authStore.user?.id || 'N/A' }}</p>
                     </div>
 
                     <el-divider style="margin: 16px 0;" />
@@ -159,29 +159,21 @@ import { ref, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Layout from "@/components/Layout.vue";
 import { useAuthStore } from "@/stores/auth";
-import {Plus} from "@element-plus/icons-vue";
-import { getDietStats } from '@/api/diet';
+import { useRouter } from "vue-router"; // 导入 useRouter
+
+// 导入 Element Plus 图标
+import { Check, Refresh, Download, Delete, Warning, User } from "@element-plus/icons-vue";
 
 const authStore = useAuthStore();
-
-// 模拟数据
-const registerDate = ref("2024-01-15");
-const lastLoginDate = ref("2024-01-20 14:30");
+const router = useRouter(); // 初始化 router
 
 const healthGoals = ref({
   dailyCalories: 2000,
   dailyExercise: 30,
   dailySleep: 8,
-  dailyWater: 2000,
+  dailyWater: 2000, // 确保与 resetGoals 中的默认值一致
   weeklyExerciseDays: 5,
   targetWeight: 65,
-});
-
-const overview = ref({
-  usageDays: 0,
-  dietRecords: 0,
-  exerciseRecords: 0,
-  sleepRecords: 0,
 });
 
 const passwordForm = ref({
@@ -206,8 +198,9 @@ const resetGoals = () => {
   ElMessage.info("目标已重置为默认值");
 };
 
-const changePassword = () => {
-  if (!passwordForm.value.currentPassword || !passwordForm.value.newPassword) {
+// 修改密码功能
+const changePassword = async () => {
+  if (!passwordForm.value.currentPassword || !passwordForm.value.newPassword || !passwordForm.value.confirmPassword) {
     ElMessage.warning("请填写完整的密码信息");
     return;
   }
@@ -217,22 +210,64 @@ const changePassword = () => {
     return;
   }
 
-  ElMessage.success("密码修改成功");
-  passwordForm.value = {
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  };
+  if (passwordForm.value.newPassword.length < 6) {
+    ElMessage.error("新密码长度不能少于6位");
+    return;
+  }
+
+  try {
+    const result = await authStore.changePassword(
+      passwordForm.value.currentPassword,
+      passwordForm.value.newPassword
+    );
+
+    if (result.success) {
+      ElMessage.success(result.message || "密码修改成功");
+      // 清空表单
+      passwordForm.value = {
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      };
+    } else {
+      ElMessage.error(result.message || "密码修改失败");
+    }
+  } catch (error) {
+    console.error("修改密码时发生错误:", error);
+    ElMessage.error("修改密码失败，请稍后重试");
+  }
 };
 
-const exportData = () => {
-  ElMessage.success("数据导出成功");
+// 导出数据功能
+const exportData = async () => {
+  try {
+    const result = await authStore.exportUserData();
+    if (result.success) {
+      // 创建 Blob 对象并下载
+      const blob = new Blob([JSON.stringify(result.data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `healthtrace_data_${authStore.user?.username || 'user'}_${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url); // 释放 URL 对象
+      ElMessage.success(result.message || "数据导出成功");
+    } else {
+      ElMessage.error(result.message || "数据导出失败");
+    }
+  } catch (error) {
+    console.error("导出数据时发生错误:", error);
+    ElMessage.error("数据导出失败，请稍后重试");
+  }
 };
 
+// 清空数据功能 (目前仅为前端模拟，实际需要后端支持)
 const clearData = async () => {
   try {
     await ElMessageBox.confirm(
-      "确定要清空所有健康数据吗？此操作不可恢复！",
+      "确定要清空所有健康数据吗？此操作不可恢复！此功能目前仅为前端模拟，实际清空需要后端支持。",
       "警告",
       {
         confirmButtonText: "确定",
@@ -240,46 +275,75 @@ const clearData = async () => {
         type: "warning",
       }
     );
-    ElMessage.success("数据已清空");
+    // 在实际应用中，这里会调用后端 API 来清空数据
+    ElMessage.success("数据已清空 (前端模拟)");
   } catch {
-    // 用户取消
+    // 用户取消操作
+    ElMessage.info("已取消清空数据");
   }
 };
 
+// 删除账户功能
 const deleteAccount = async () => {
   try {
-    await ElMessageBox.confirm(
-      "确定要删除账户吗？此操作不可恢复！",
-      "危险操作",
-      {
-        confirmButtonText: "确定删除",
-        cancelButtonText: "取消",
-        type: "error",
-      }
-    );
-    ElMessage.success("账户已删除");
-    authStore.logout();
-  } catch {
-    // 用户取消
-  }
-};
+    // 第一次确认：要求用户输入密码
+    const { value: password } = await ElMessageBox.prompt('请输入您的密码以确认删除账户', '确认删除', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      inputType: 'password',
+      inputPlaceholder: '请输入密码',
+      inputValidator: (value) => {
+        if (!value) return '密码不能为空';
+        if (value.length < 6) return '密码长度不能少于6位';
+        return true;
+      },
+      inputErrorMessage: '密码格式不正确',
+    });
 
-const fetchDietStats = async () => {
-  try {
-    const userId = 1; // 假设用户ID为1
-    const response = await getDietStats(userId, { days: 7 });
-    overview.value.dietRecords = response.data.total_records;
+    // 如果用户输入了密码并点击了确定
+    if (password) {
+      // 第二次确认：最终确认删除
+      await ElMessageBox.confirm(
+        "确定要删除账户吗？此操作不可恢复！您的所有数据将被永久删除。",
+        "危险操作",
+        {
+          confirmButtonText: "确定删除",
+          cancelButtonText: "取消",
+          type: "error",
+        }
+      );
+
+      // 调用 store 中的删除账户 action
+      const result = await authStore.deleteAccount(password);
+
+      if (result.success) {
+        ElMessage.success(result.message || "账户已删除");
+        // authStore.logout() 已在 store 的 deleteAccount action 中调用
+        router.push("/login"); // 删除成功后跳转到登录页
+      } else {
+        ElMessage.error(result.message || "账户删除失败");
+      }
+    } else {
+      ElMessage.info("已取消删除账户");
+    }
   } catch (error) {
-    console.error('获取饮食统计失败:', error);
+    // 捕获 ElMessageBox.prompt 或 ElMessageBox.confirm 的取消操作
+    if (error === 'cancel') {
+      ElMessage.info("已取消删除账户");
+    } else {
+      console.error("删除账户时发生错误:", error);
+      ElMessage.error("删除账户失败，请稍后重试");
+    }
   }
 };
 
 onMounted(() => {
-  fetchDietStats();
+  // fetchDietStats(); // 如果需要，可以保留或移除
 });
 </script>
 
 <style scoped>
+/* 样式保持不变 */
 .profile-page {
   padding: 0;
 }

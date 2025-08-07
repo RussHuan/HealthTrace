@@ -2,10 +2,10 @@
   <Layout>
     <div class="diet-page">
       <!-- 添加饮食记录 -->
-      <div style="background-color: transparent; padding: 20px;">
-        <a-row :gutter="16" style="display: flex;">
+      <div style="background-color: transparent; padding: 20px">
+        <a-row :gutter="16" style="display: flex">
           <a-col :span="24">
-            <a-card title="添加饮食记录" style="height: 100%;">
+            <a-card title="添加饮食记录" style="height: 100%">
               <el-form :model="dietForm" label-width="100px">
                 <el-row :gutter="20">
                   <el-col :span="8">
@@ -42,7 +42,10 @@
                 <el-row :gutter="20">
                   <el-col :span="8">
                     <el-form-item label="餐次">
-                      <el-select v-model="dietForm.mealType" placeholder="选择餐次">
+                      <el-select
+                        v-model="dietForm.mealType"
+                        placeholder="选择餐次"
+                      >
                         <el-option label="早餐" value="breakfast" />
                         <el-option label="午餐" value="lunch" />
                         <el-option label="晚餐" value="dinner" />
@@ -61,7 +64,11 @@
                   </el-col>
                   <el-col :span="8">
                     <el-form-item>
-                      <el-button type="primary" @click="addRecord" :loading="loading">
+                      <el-button
+                        type="primary"
+                        @click="addRecord"
+                        :loading="loading"
+                      >
                         <el-icon><Plus /></el-icon>
                         添加记录
                       </el-button>
@@ -75,15 +82,21 @@
       </div>
 
       <!-- 今日饮食记录 -->
-      <div style="background-color: transparent; padding: 20px;">
-        <a-row :gutter="16" style="display: flex;">
+      <div style="background-color: transparent; padding: 20px">
+        <a-row :gutter="16" style="display: flex">
           <a-col :span="24">
-            <a-card title="今日饮食记录" style="height: 100%;">
+            <a-card title="今日饮食记录" style="height: 100%">
               <div class="header-actions">
-                <el-tag type="success">总卡路里: {{ totalCalories }} kcal</el-tag>
+                <el-tag type="success"
+                  >总卡路里: {{ totalCalories }} kcal</el-tag
+                >
                 <el-tag type="info">记录数: {{ todayRecords.length }}</el-tag>
               </div>
-              <el-table :data="todayRecords" style="width: 100%" v-loading="tableLoading">
+              <el-table
+                :data="todayRecords"
+                style="width: 100%"
+                v-loading="tableLoading"
+              >
                 <el-table-column prop="content" label="食物名称" />
                 <el-table-column prop="calories" label="卡路里" width="100">
                   <template #default="scope">
@@ -102,8 +115,15 @@
                     {{ formatDate(scope.row.date) }}
                   </template>
                 </el-table-column>
-                <el-table-column label="操作" width="120">
+                <el-table-column label="操作" width="160">
                   <template #default="scope">
+                    <el-button
+                      type="primary"
+                      size="small"
+                      @click="openEditDialog(scope.row)"
+                    >
+                      编辑
+                    </el-button>
                     <el-button
                       type="danger"
                       size="small"
@@ -118,19 +138,88 @@
           </a-col>
         </a-row>
       </div>
-
-      
     </div>
   </Layout>
+  <el-dialog v-model="editDialogVisible" title="编辑饮食记录" width="500px">
+  <el-form :model="editForm" label-width="100px">
+    <el-form-item label="食物名称">
+      <el-input v-model="editForm.foodName" />
+    </el-form-item>
+    <el-form-item label="卡路里">
+      <el-input-number v-model="editForm.calories" :min="0" />
+    </el-form-item>
+    <el-form-item label="餐次">
+      <el-select v-model="editForm.mealType" placeholder="选择餐次">
+        <el-option label="早餐" value="breakfast" />
+        <el-option label="午餐" value="lunch" />
+        <el-option label="晚餐" value="dinner" />
+        <el-option label="加餐" value="snack" />
+      </el-select>
+    </el-form-item>
+    <el-form-item label="日期">
+      <el-date-picker v-model="editForm.date" type="date" format="YYYY-MM-DD" />
+    </el-form-item>
+  </el-form>
+
+  <template #footer>
+    <el-button @click="editDialogVisible = false">取消</el-button>
+    <el-button type="primary" @click="submitEdit">保存</el-button>
+  </template>
+</el-dialog>
+
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Layout from "@/components/Layout.vue";
-import {Plus} from "@element-plus/icons-vue";
-import { addDietRecord, getDietRecords, deleteDietRecord, getDietStats } from '@/api/diet';
+import { Plus } from "@element-plus/icons-vue";
+import {
+  addDietRecord,
+  getDietRecords,
+  deleteDietRecord,
+  getDietStats,
+} from "@/api/diet";
 import { useAuthStore } from "@/stores/auth.js";
+import { updateDietRecord } from "@/api/diet"; // 补充此行
+
+const editDialogVisible = ref(false);
+const editForm = ref({
+  id: null,
+  foodName: "",
+  calories: 0,
+  mealType: "",
+  date: "",
+});
+
+const openEditDialog = (record) => {
+  editForm.value = {
+    id: record.id,
+    foodName: record.content,
+    calories: record.calories,
+    mealType: record.meal_type,
+    date: record.date,
+  };
+  editDialogVisible.value = true;
+};
+
+const submitEdit = async () => {
+  try {
+    const updateData = {
+      content: editForm.value.foodName,
+      calories: editForm.value.calories,
+      meal_type: editForm.value.mealType,
+      date: editForm.value.date,
+    };
+
+    await updateDietRecord(editForm.value.id, updateData);
+    ElMessage.success("记录更新成功");
+    editDialogVisible.value = false;
+    await fetchDietRecords();
+  } catch (error) {
+    ElMessage.error(error.message || "更新记录失败");
+  }
+};
 
 const authStore = useAuthStore();
 
@@ -174,7 +263,11 @@ const addRecord = async () => {
     return;
   }
 
-  if (!dietForm.value.foodName || !dietForm.value.calories || !dietForm.value.mealType) {
+  if (
+    !dietForm.value.foodName ||
+    !dietForm.value.calories ||
+    !dietForm.value.mealType
+  ) {
     ElMessage.warning("请填写完整的饮食信息");
     return;
   }
@@ -186,11 +279,11 @@ const addRecord = async () => {
       meal_type: dietForm.value.mealType,
       content: dietForm.value.foodName,
       calories: dietForm.value.calories,
-      date: new Date().toISOString().split('T')[0],
+      date: new Date().toISOString().split("T")[0],
     };
-    
+
     await addDietRecord(newRecord);
-    
+
     // 重置表单
     dietForm.value = {
       foodName: "",
@@ -199,11 +292,11 @@ const addRecord = async () => {
       mealType: "",
       time: null,
     };
-    
-    ElMessage.success('饮食记录添加成功');
+
+    ElMessage.success("饮食记录添加成功");
     await fetchDietRecords();
   } catch (error) {
-    ElMessage.error(error.message || '添加饮食记录失败');
+    ElMessage.error(error.message || "添加饮食记录失败");
   } finally {
     loading.value = false;
   }
@@ -218,11 +311,11 @@ const deleteRecord = async (recordId) => {
     });
 
     await deleteDietRecord(recordId);
-    ElMessage.success('记录删除成功');
+    ElMessage.success("记录删除成功");
     await fetchDietRecords();
   } catch (error) {
     if (error !== "cancel") {
-      ElMessage.error(error.message || '删除记录失败');
+      ElMessage.error(error.message || "删除记录失败");
     }
   }
 };
@@ -262,9 +355,9 @@ const getMealTypeLabel = (type) => {
 };
 
 const formatDate = (dateStr) => {
-  if (!dateStr) return '-';
+  if (!dateStr) return "-";
   const date = new Date(dateStr);
-  return date.toLocaleDateString('zh-CN');
+  return date.toLocaleDateString("zh-CN");
 };
 
 onMounted(() => {

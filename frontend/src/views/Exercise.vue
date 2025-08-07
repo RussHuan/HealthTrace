@@ -2,10 +2,10 @@
   <Layout>
     <div class="exercise-page">
       <!-- 添加运动记录 -->
-      <div style="background-color: transparent; padding: 20px;">
-        <a-row :gutter="16" style="display: flex;">
+      <div style="background-color: transparent; padding: 20px">
+        <a-row :gutter="16" style="display: flex">
           <a-col :span="24">
-            <a-card title="添加运动记录" style="height: 100%;">
+            <a-card title="添加运动记录" style="height: 100%">
               <el-form :model="exerciseForm" label-width="100px">
                 <el-row :gutter="20">
                   <el-col :span="8">
@@ -69,7 +69,11 @@
                   </el-col>
                   <el-col :span="8">
                     <el-form-item>
-                      <el-button type="primary" @click="addExerciseRecord" :loading="loading">
+                      <el-button
+                        type="primary"
+                        @click="addExerciseRecord"
+                        :loading="loading"
+                      >
                         <el-icon><Plus /></el-icon>
                         添加记录
                       </el-button>
@@ -83,10 +87,10 @@
       </div>
 
       <!-- 运动记录列表 -->
-      <div style="background-color: transparent; padding: 20px;">
-        <a-row :gutter="16" style="display: flex;">
+      <div style="background-color: transparent; padding: 20px">
+        <a-row :gutter="16" style="display: flex">
           <a-col :span="24">
-            <a-card title="运动记录列表" style="height: 100%;">
+            <a-card title="运动记录列表" style="height: 100%">
               <div class="header-actions">
                 <el-date-picker
                   v-model="dateRange"
@@ -97,13 +101,19 @@
                   format="YYYY-MM-DD"
                   value-format="YYYY-MM-DD"
                   @change="loadExerciseRecords"
-                  style="margin-right: 10px;"
+                  style="margin-right: 10px"
                 />
                 <el-tag type="success">总时长: {{ totalDuration }} 分钟</el-tag>
                 <el-tag type="warning">消耗: {{ totalCalories }} kcal</el-tag>
-                <el-tag type="info">记录数: {{ exerciseRecords.length }}</el-tag>
+                <el-tag type="info"
+                  >记录数: {{ exerciseRecords.length }}</el-tag
+                >
               </div>
-              <el-table :data="exerciseRecords" style="width: 100%" v-loading="tableLoading">
+              <el-table
+                :data="exerciseRecords"
+                style="width: 100%"
+                v-loading="tableLoading"
+              >
                 <el-table-column prop="type" label="运动类型" width="120">
                   <template #default="scope">
                     <el-tag :type="getExerciseTypeColor(scope.row.type)">
@@ -121,7 +131,11 @@
                     {{ formatDateTime(scope.row.end_time) }}
                   </template>
                 </el-table-column>
-                <el-table-column prop="duration_mimutes" label="时长" width="100">
+                <el-table-column
+                  prop="duration_mimutes"
+                  label="时长"
+                  width="100"
+                >
                   <template #default="scope">
                     {{ scope.row.duration_mimutes }} 分钟
                   </template>
@@ -133,7 +147,7 @@
                 </el-table-column>
                 <el-table-column prop="notes" label="备注" min-width="200">
                   <template #default="scope">
-                    {{ scope.row.notes || '-' }}
+                    {{ scope.row.notes || "-" }}
                   </template>
                 </el-table-column>
                 <el-table-column label="操作" width="150">
@@ -161,25 +175,78 @@
       </div>
 
       <!-- 运动统计 -->
-      <div style="background-color: transparent; padding: 20px;">
-        <a-row :gutter="16" style="display: flex;">
+      <div style="background-color: transparent; padding: 20px">
+        <a-row :gutter="16" style="display: flex">
           <!-- 平均运动时长 -->
-          <a-col :xs="24" :sm="12" :md="6" style="height: 140px;">
-            <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
-              <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
-                <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
+          <a-col :xs="24" :sm="12" :md="6" style="height: 140px">
+            <a-card
+              :bordered="false"
+              style="
+                height: 100%;
+                display: flex;
+                align-items: center;
+                min-width: 0;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  width: 100%;
+                  min-width: 0;
+                "
+              >
+                <div
+                  style="
+                    font-size: 32px;
+                    color: #1890ff;
+                    margin-right: 12px;
+                    flex-shrink: 0;
+                  "
+                >
                   <el-icon><Timer /></el-icon>
                 </div>
-                <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
-                  <h3 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    min-width: 0;
+                  "
+                >
+                  <h3
+                    style="
+                      margin: 0;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     平均运动时长
                   </h3>
-                  <p style="margin: 0; font-weight: bold; font-size: 26px; line-height: 1.4;
-                            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  <p
+                    style="
+                      margin: 0;
+                      font-weight: bold;
+                      font-size: 26px;
+                      line-height: 1.4;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     {{ exerciseStats.average_duration || 0 }} 分钟
                   </p>
-                  <p style="margin: 0; color: #888; font-size: 14px; white-space: nowrap;
-                            overflow: hidden; text-overflow: ellipsis;">
+                  <p
+                    style="
+                      margin: 0;
+                      color: #888;
+                      font-size: 14px;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     目标: 30 分钟
                   </p>
                 </div>
@@ -188,22 +255,75 @@
           </a-col>
 
           <!-- 总消耗卡路里 -->
-          <a-col :xs="0" :sm="12" :md="6" style="height: 140px;" class="hide-xs">
-            <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
-              <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
-                <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
+          <a-col :xs="0" :sm="12" :md="6" style="height: 140px" class="hide-xs">
+            <a-card
+              :bordered="false"
+              style="
+                height: 100%;
+                display: flex;
+                align-items: center;
+                min-width: 0;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  width: 100%;
+                  min-width: 0;
+                "
+              >
+                <div
+                  style="
+                    font-size: 32px;
+                    color: #1890ff;
+                    margin-right: 12px;
+                    flex-shrink: 0;
+                  "
+                >
                   <el-icon><HotWater /></el-icon>
                 </div>
-                <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
-                  <h3 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    min-width: 0;
+                  "
+                >
+                  <h3
+                    style="
+                      margin: 0;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     总消耗卡路里
                   </h3>
-                  <p style="margin: 0; font-weight: bold; font-size: 26px; line-height: 1.4;
-                            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  <p
+                    style="
+                      margin: 0;
+                      font-weight: bold;
+                      font-size: 26px;
+                      line-height: 1.4;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     {{ exerciseStats.total_calories || 0 }} kcal
                   </p>
-                  <p style="margin: 0; color: #888; font-size: 14px; white-space: nowrap;
-                            overflow: hidden; text-overflow: ellipsis;">
+                  <p
+                    style="
+                      margin: 0;
+                      color: #888;
+                      font-size: 14px;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     目标: 1000 kcal
                   </p>
                 </div>
@@ -212,22 +332,81 @@
           </a-col>
 
           <!-- 记录总数 -->
-          <a-col :xs="0" :sm="0" :md="6" style="height: 140px;" class="hide-sm-xs">
-            <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
-              <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
-                <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
+          <a-col
+            :xs="0"
+            :sm="0"
+            :md="6"
+            style="height: 140px"
+            class="hide-sm-xs"
+          >
+            <a-card
+              :bordered="false"
+              style="
+                height: 100%;
+                display: flex;
+                align-items: center;
+                min-width: 0;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  width: 100%;
+                  min-width: 0;
+                "
+              >
+                <div
+                  style="
+                    font-size: 32px;
+                    color: #1890ff;
+                    margin-right: 12px;
+                    flex-shrink: 0;
+                  "
+                >
                   <el-icon><Calendar /></el-icon>
                 </div>
-                <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
-                  <h3 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    min-width: 0;
+                  "
+                >
+                  <h3
+                    style="
+                      margin: 0;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     记录总数
                   </h3>
-                  <p style="margin: 0; font-weight: bold; font-size: 26px; line-height: 1.4;
-                            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  <p
+                    style="
+                      margin: 0;
+                      font-weight: bold;
+                      font-size: 26px;
+                      line-height: 1.4;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     {{ exerciseStats.total_records || 0 }} 条
                   </p>
-                  <p style="margin: 0; color: #888; font-size: 14px; white-space: nowrap;
-                            overflow: hidden; text-overflow: ellipsis;">
+                  <p
+                    style="
+                      margin: 0;
+                      color: #888;
+                      font-size: 14px;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     最近7天
                   </p>
                 </div>
@@ -236,23 +415,91 @@
           </a-col>
 
           <!-- 最佳运动 -->
-          <a-col :xs="0" :sm="0" :md="6" style="height: 140px;" class="hide-sm-xs">
-            <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
-              <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
-                <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
+          <a-col
+            :xs="0"
+            :sm="0"
+            :md="6"
+            style="height: 140px"
+            class="hide-sm-xs"
+          >
+            <a-card
+              :bordered="false"
+              style="
+                height: 100%;
+                display: flex;
+                align-items: center;
+                min-width: 0;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  width: 100%;
+                  min-width: 0;
+                "
+              >
+                <div
+                  style="
+                    font-size: 32px;
+                    color: #1890ff;
+                    margin-right: 12px;
+                    flex-shrink: 0;
+                  "
+                >
                   <el-icon><Star /></el-icon>
                 </div>
-                <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
-                  <h3 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    min-width: 0;
+                  "
+                >
+                  <h3
+                    style="
+                      margin: 0;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     最佳运动
                   </h3>
-                  <p style="margin: 0; font-weight: bold; font-size: 26px; line-height: 1.4;
-                            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                    {{ exerciseStats.best_exercise ? exerciseStats.best_exercise.calories : 0 }} kcal
+                  <p
+                    style="
+                      margin: 0;
+                      font-weight: bold;
+                      font-size: 26px;
+                      line-height: 1.4;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
+                    {{
+                      exerciseStats.best_exercise
+                        ? exerciseStats.best_exercise.calories
+                        : 0
+                    }}
+                    kcal
                   </p>
-                  <p style="margin: 0; color: #888; font-size: 14px; white-space: nowrap;
-                            overflow: hidden; text-overflow: ellipsis;">
-                    {{ exerciseStats.best_exercise ? formatDate(exerciseStats.best_exercise.start_time) : '暂无' }}
+                  <p
+                    style="
+                      margin: 0;
+                      color: #888;
+                      font-size: 14px;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
+                    {{
+                      exerciseStats.best_exercise
+                        ? formatDate(exerciseStats.best_exercise.start_time)
+                        : "暂无"
+                    }}
                   </p>
                 </div>
               </div>
@@ -262,14 +509,78 @@
       </div>
     </div>
   </Layout>
+  <el-dialog v-model="editDialogVisible" title="编辑运动记录" width="600px">
+    <el-form :model="editForm" label-width="100px">
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="运动类型">
+            <el-select v-model="editForm.type" placeholder="选择运动类型">
+              <el-option label="跑步" value="running" />
+              <el-option label="步行" value="walking" />
+              <el-option label="骑行" value="cycling" />
+              <el-option label="游泳" value="swimming" />
+              <el-option label="健身" value="gym" />
+              <el-option label="瑜伽" value="yoga" />
+              <el-option label="其他" value="other" />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="卡路里">
+            <el-input-number v-model="editForm.calories" :min="0" :max="2000" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="开始时间">
+            <el-date-picker
+              v-model="editForm.startTime"
+              type="datetime"
+              placeholder="开始时间"
+              format="YYYY-MM-DD HH:mm"
+              value-format="YYYY-MM-DDTHH:mm:ss"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="结束时间">
+            <el-date-picker
+              v-model="editForm.endTime"
+              type="datetime"
+              placeholder="结束时间"
+              format="YYYY-MM-DD HH:mm"
+              value-format="YYYY-MM-DDTHH:mm:ss"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-form-item label="备注">
+        <el-input v-model="editForm.notes" type="textarea" rows="2" />
+      </el-form-item>
+    </el-form>
+
+    <template #footer>
+      <el-button @click="editDialogVisible = false">取消</el-button>
+      <el-button type="primary" @click="submitEdit">保存</el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Layout from "@/components/Layout.vue";
-import {HotWater, Plus, Timer, Calendar, Star} from "@element-plus/icons-vue";
-import { addExerciseRecord as addExerciseRecordAPI, getExerciseRecords, updateExerciseRecord, deleteExerciseRecord, getExerciseStats } from '@/api/exercise';
+import { HotWater, Plus, Timer, Calendar, Star } from "@element-plus/icons-vue";
+import {
+  addExerciseRecord as addExerciseRecordAPI,
+  getExerciseRecords,
+  updateExerciseRecord,
+  deleteExerciseRecord,
+  getExerciseStats,
+} from "@/api/exercise";
 import { useAuthStore } from "@/stores/auth.js";
 
 const authStore = useAuthStore();
@@ -290,11 +601,17 @@ const dateRange = ref([]);
 
 // 计算总时长和总卡路里
 const totalDuration = computed(() => {
-  return exerciseRecords.value.reduce((sum, record) => sum + (record.duration_mimutes || 0), 0);
+  return exerciseRecords.value.reduce(
+    (sum, record) => sum + (record.duration_mimutes || 0),
+    0
+  );
 });
 
 const totalCalories = computed(() => {
-  return exerciseRecords.value.reduce((sum, record) => sum + (record.calories || 0), 0);
+  return exerciseRecords.value.reduce(
+    (sum, record) => sum + (record.calories || 0),
+    0
+  );
 });
 
 // 加载运动记录
@@ -336,7 +653,7 @@ const loadExerciseStats = async () => {
       average_duration: 0,
       total_calories: 0,
       best_exercise: null,
-      worst_exercise: null
+      worst_exercise: null,
     };
   }
 };
@@ -348,7 +665,11 @@ const addExerciseRecord = async () => {
     return;
   }
 
-  if (!exerciseForm.value.type || !exerciseForm.value.startTime || !exerciseForm.value.endTime) {
+  if (
+    !exerciseForm.value.type ||
+    !exerciseForm.value.startTime ||
+    !exerciseForm.value.endTime
+  ) {
     ElMessage.warning("请填写完整的运动信息");
     return;
   }
@@ -387,12 +708,6 @@ const addExerciseRecord = async () => {
   }
 };
 
-// 编辑运动记录
-const editRecord = (record) => {
-  // 这里可以实现编辑功能，暂时显示提示
-  ElMessage.info("编辑功能开发中...");
-};
-
 // 删除运动记录
 const deleteRecord = async (recordId) => {
   try {
@@ -417,22 +732,22 @@ const deleteRecord = async (recordId) => {
 
 // 格式化日期时间
 const formatDateTime = (dateTimeStr) => {
-  if (!dateTimeStr) return '-';
+  if (!dateTimeStr) return "-";
   const date = new Date(dateTimeStr);
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
+  return date.toLocaleString("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 };
 
 // 格式化日期
 const formatDate = (dateTimeStr) => {
-  if (!dateTimeStr) return '-';
+  if (!dateTimeStr) return "-";
   const date = new Date(dateTimeStr);
-  return date.toLocaleDateString('zh-CN');
+  return date.toLocaleDateString("zh-CN");
 };
 
 const getExerciseTypeColor = (type) => {
@@ -466,6 +781,8 @@ onMounted(async () => {
   await loadExerciseRecords();
   await loadExerciseStats();
 });
+
+
 </script>
 
 <style scoped>

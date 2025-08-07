@@ -2,10 +2,10 @@
   <Layout>
     <div class="sleep-page">
       <!-- 添加睡眠记录 -->
-      <div style="background-color: transparent; padding: 20px;">
-        <a-row :gutter="16" style="display: flex;">
+      <div style="background-color: transparent; padding: 20px">
+        <a-row :gutter="16" style="display: flex">
           <a-col :span="24">
-            <a-card title="添加睡眠记录" style="height: 100%;">
+            <a-card title="添加睡眠记录" style="height: 100%">
               <el-form :model="sleepForm" label-width="100px">
                 <el-row :gutter="20">
                   <el-col :span="8">
@@ -36,7 +36,18 @@
                         v-model="sleepForm.qualityRating"
                         :max="10"
                         show-score
-                        :texts="['很差', '差', '一般', '良好', '很好', '优秀', '极好', '完美', '卓越', '理想']"
+                        :texts="[
+                          '很差',
+                          '差',
+                          '一般',
+                          '良好',
+                          '很好',
+                          '优秀',
+                          '极好',
+                          '完美',
+                          '卓越',
+                          '理想',
+                        ]"
                       />
                     </el-form-item>
                   </el-col>
@@ -55,7 +66,11 @@
                   </el-col>
                   <el-col :span="8">
                     <el-form-item>
-                      <el-button type="primary" @click="addSleepRecord" :loading="loading">
+                      <el-button
+                        type="primary"
+                        @click="addSleepRecord"
+                        :loading="loading"
+                      >
                         <el-icon><Plus /></el-icon>
                         添加记录
                       </el-button>
@@ -69,10 +84,10 @@
       </div>
 
       <!-- 睡眠记录列表 -->
-      <div style="background-color: transparent; padding: 20px;">
-        <a-row :gutter="16" style="display: flex;">
+      <div style="background-color: transparent; padding: 20px">
+        <a-row :gutter="16" style="display: flex">
           <a-col :span="24">
-            <a-card title="睡眠记录列表" style="height: 100%;">
+            <a-card title="睡眠记录列表" style="height: 100%">
               <div class="header-actions">
                 <el-date-picker
                   v-model="dateRange"
@@ -83,12 +98,16 @@
                   format="YYYY-MM-DD"
                   value-format="YYYY-MM-DD"
                   @change="loadSleepRecords"
-                  style="margin-right: 10px;"
+                  style="margin-right: 10px"
                 />
                 <el-tag type="success">平均时长: {{ avgDuration }} 小时</el-tag>
                 <el-tag type="info">记录数: {{ sleepRecords.length }}</el-tag>
               </div>
-              <el-table :data="sleepRecords" style="width: 100%" v-loading="tableLoading">
+              <el-table
+                :data="sleepRecords"
+                style="width: 100%"
+                v-loading="tableLoading"
+              >
                 <el-table-column prop="sleep_time" label="入睡时间" width="160">
                   <template #default="scope">
                     {{ formatDateTime(scope.row.sleep_time) }}
@@ -99,14 +118,22 @@
                     {{ formatDateTime(scope.row.wake_time) }}
                   </template>
                 </el-table-column>
-                <el-table-column prop="duration_hours" label="睡眠时长" width="120">
+                <el-table-column
+                  prop="duration_hours"
+                  label="睡眠时长"
+                  width="120"
+                >
                   <template #default="scope">
                     <el-tag :type="getDurationColor(scope.row.duration_hours)">
                       {{ scope.row.duration_hours }} 小时
                     </el-tag>
                   </template>
                 </el-table-column>
-                <el-table-column prop="quality_rating" label="睡眠质量" width="120">
+                <el-table-column
+                  prop="quality_rating"
+                  label="睡眠质量"
+                  width="120"
+                >
                   <template #default="scope">
                     <el-rate
                       v-model="scope.row.quality_rating"
@@ -119,7 +146,7 @@
                 </el-table-column>
                 <el-table-column prop="notes" label="备注" min-width="200">
                   <template #default="scope">
-                    {{ scope.row.notes || '-' }}
+                    {{ scope.row.notes || "-" }}
                   </template>
                 </el-table-column>
                 <el-table-column label="操作" width="150">
@@ -147,25 +174,78 @@
       </div>
 
       <!-- 睡眠统计 -->
-      <div style="background-color: transparent; padding: 20px;">
-        <a-row :gutter="16" style="display: flex;">
+      <div style="background-color: transparent; padding: 20px">
+        <a-row :gutter="16" style="display: flex">
           <!-- 平均睡眠时长 -->
-          <a-col :xs="24" :sm="12" :md="6" style="height: 140px;">
-            <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
-              <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
-                <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
+          <a-col :xs="24" :sm="12" :md="6" style="height: 140px">
+            <a-card
+              :bordered="false"
+              style="
+                height: 100%;
+                display: flex;
+                align-items: center;
+                min-width: 0;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  width: 100%;
+                  min-width: 0;
+                "
+              >
+                <div
+                  style="
+                    font-size: 32px;
+                    color: #1890ff;
+                    margin-right: 12px;
+                    flex-shrink: 0;
+                  "
+                >
                   <el-icon><Moon /></el-icon>
                 </div>
-                <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
-                  <h3 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    min-width: 0;
+                  "
+                >
+                  <h3
+                    style="
+                      margin: 0;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     平均睡眠时长
                   </h3>
-                  <p style="margin: 0; font-weight: bold; font-size: 26px; line-height: 1.4;
-                            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  <p
+                    style="
+                      margin: 0;
+                      font-weight: bold;
+                      font-size: 26px;
+                      line-height: 1.4;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     {{ sleepStats.average_duration || 0 }} 小时
                   </p>
-                  <p style="margin: 0; color: #888; font-size: 14px; white-space: nowrap;
-                            overflow: hidden; text-overflow: ellipsis;">
+                  <p
+                    style="
+                      margin: 0;
+                      color: #888;
+                      font-size: 14px;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     目标: 8 小时
                   </p>
                 </div>
@@ -174,22 +254,75 @@
           </a-col>
 
           <!-- 平均睡眠质量 -->
-          <a-col :xs="0" :sm="12" :md="6" style="height: 140px;" class="hide-xs">
-            <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
-              <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
-                <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
+          <a-col :xs="0" :sm="12" :md="6" style="height: 140px" class="hide-xs">
+            <a-card
+              :bordered="false"
+              style="
+                height: 100%;
+                display: flex;
+                align-items: center;
+                min-width: 0;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  width: 100%;
+                  min-width: 0;
+                "
+              >
+                <div
+                  style="
+                    font-size: 32px;
+                    color: #1890ff;
+                    margin-right: 12px;
+                    flex-shrink: 0;
+                  "
+                >
                   <el-icon><Star /></el-icon>
                 </div>
-                <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
-                  <h3 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    min-width: 0;
+                  "
+                >
+                  <h3
+                    style="
+                      margin: 0;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     平均睡眠质量
                   </h3>
-                  <p style="margin: 0; font-weight: bold; font-size: 26px; line-height: 1.4;
-                            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  <p
+                    style="
+                      margin: 0;
+                      font-weight: bold;
+                      font-size: 26px;
+                      line-height: 1.4;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     {{ sleepStats.average_quality || 0 }}/10
                   </p>
-                  <p style="margin: 0; color: #888; font-size: 14px; white-space: nowrap;
-                            overflow: hidden; text-overflow: ellipsis;">
+                  <p
+                    style="
+                      margin: 0;
+                      color: #888;
+                      font-size: 14px;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     目标: 8/10
                   </p>
                 </div>
@@ -198,22 +331,81 @@
           </a-col>
 
           <!-- 记录总数 -->
-          <a-col :xs="0" :sm="0" :md="6" style="height: 140px;" class="hide-sm-xs">
-            <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
-              <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
-                <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
+          <a-col
+            :xs="0"
+            :sm="0"
+            :md="6"
+            style="height: 140px"
+            class="hide-sm-xs"
+          >
+            <a-card
+              :bordered="false"
+              style="
+                height: 100%;
+                display: flex;
+                align-items: center;
+                min-width: 0;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  width: 100%;
+                  min-width: 0;
+                "
+              >
+                <div
+                  style="
+                    font-size: 32px;
+                    color: #1890ff;
+                    margin-right: 12px;
+                    flex-shrink: 0;
+                  "
+                >
                   <el-icon><Timer /></el-icon>
                 </div>
-                <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
-                  <h3 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    min-width: 0;
+                  "
+                >
+                  <h3
+                    style="
+                      margin: 0;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     记录总数
                   </h3>
-                  <p style="margin: 0; font-weight: bold; font-size: 26px; line-height: 1.4;
-                            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  <p
+                    style="
+                      margin: 0;
+                      font-weight: bold;
+                      font-size: 26px;
+                      line-height: 1.4;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     {{ sleepStats.total_records || 0 }} 条
                   </p>
-                  <p style="margin: 0; color: #888; font-size: 14px; white-space: nowrap;
-                            overflow: hidden; text-overflow: ellipsis;">
+                  <p
+                    style="
+                      margin: 0;
+                      color: #888;
+                      font-size: 14px;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     最近7天
                   </p>
                 </div>
@@ -222,23 +414,91 @@
           </a-col>
 
           <!-- 最佳睡眠 -->
-          <a-col :xs="0" :sm="0" :md="6" style="height: 140px;" class="hide-sm-xs">
-            <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
-              <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
-                <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
+          <a-col
+            :xs="0"
+            :sm="0"
+            :md="6"
+            style="height: 140px"
+            class="hide-sm-xs"
+          >
+            <a-card
+              :bordered="false"
+              style="
+                height: 100%;
+                display: flex;
+                align-items: center;
+                min-width: 0;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  width: 100%;
+                  min-width: 0;
+                "
+              >
+                <div
+                  style="
+                    font-size: 32px;
+                    color: #1890ff;
+                    margin-right: 12px;
+                    flex-shrink: 0;
+                  "
+                >
                   <el-icon><Calendar /></el-icon>
                 </div>
-                <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
-                  <h3 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    min-width: 0;
+                  "
+                >
+                  <h3
+                    style="
+                      margin: 0;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
                     最佳睡眠
                   </h3>
-                  <p style="margin: 0; font-weight: bold; font-size: 26px; line-height: 1.4;
-                            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                    {{ sleepStats.best_sleep ? sleepStats.best_sleep.duration_hours : 0 }} 小时
+                  <p
+                    style="
+                      margin: 0;
+                      font-weight: bold;
+                      font-size: 26px;
+                      line-height: 1.4;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
+                    {{
+                      sleepStats.best_sleep
+                        ? sleepStats.best_sleep.duration_hours
+                        : 0
+                    }}
+                    小时
                   </p>
-                  <p style="margin: 0; color: #888; font-size: 14px; white-space: nowrap;
-                            overflow: hidden; text-overflow: ellipsis;">
-                    {{ sleepStats.best_sleep ? formatDate(sleepStats.best_sleep.sleep_time) : '暂无' }}
+                  <p
+                    style="
+                      margin: 0;
+                      color: #888;
+                      font-size: 14px;
+                      white-space: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    "
+                  >
+                    {{
+                      sleepStats.best_sleep
+                        ? formatDate(sleepStats.best_sleep.sleep_time)
+                        : "暂无"
+                    }}
                   </p>
                 </div>
               </div>
@@ -248,10 +508,10 @@
       </div>
 
       <!-- 睡眠建议 -->
-      <div style="background-color: transparent; padding: 20px;">
-        <a-row :gutter="16" style="display: flex;">
+      <div style="background-color: transparent; padding: 20px">
+        <a-row :gutter="16" style="display: flex">
           <a-col :span="24">
-            <a-card title="睡眠建议" style="height: 100%;">
+            <a-card title="睡眠建议" style="height: 100%">
               <div class="advice-content">
                 <el-alert
                   v-if="sleepAdvice.length > 0"
@@ -272,15 +532,63 @@
       </div>
     </div>
   </Layout>
+  <el-dialog v-model="editDialogVisible" title="编辑睡眠记录" width="600px">
+    <el-form :model="editForm" label-width="100px">
+      <el-form-item label="入睡时间">
+        <el-date-picker
+          v-model="editForm.sleepTime"
+          type="datetime"
+          placeholder="选择入睡时间"
+          format="YYYY-MM-DD HH:mm"
+          value-format="YYYY-MM-DDTHH:mm:ss"
+        />
+      </el-form-item>
+      <el-form-item label="起床时间">
+        <el-date-picker
+          v-model="editForm.wakeTime"
+          type="datetime"
+          placeholder="选择起床时间"
+          format="YYYY-MM-DD HH:mm"
+          value-format="YYYY-MM-DDTHH:mm:ss"
+        />
+      </el-form-item>
+      <el-form-item label="睡眠质量">
+        <el-rate
+          v-model="editForm.qualityRating"
+          :max="10"
+          show-score
+          text-color="#ff9900"
+        />
+      </el-form-item>
+      <el-form-item label="备注">
+        <el-input
+          v-model="editForm.notes"
+          type="textarea"
+          :rows="2"
+          placeholder="备注"
+        />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button @click="editDialogVisible = false">取消</el-button>
+      <el-button type="primary" @click="submitEdit">保存</el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Layout from "@/components/Layout.vue";
-import { addSleepRecord as addSleepRecordAPI, getSleepRecords, updateSleepRecord, deleteSleepRecord as deleteSleepRecordAPI, getSleepStats } from "@/api/sleep.js";
+import {
+  addSleepRecord as addSleepRecordAPI,
+  getSleepRecords,
+  updateSleepRecord,
+  deleteSleepRecord as deleteSleepRecordAPI,
+  getSleepStats,
+} from "@/api/sleep.js";
 import { useAuthStore } from "@/stores/auth.js";
-import {Bicycle, Moon, Plus} from "@element-plus/icons-vue";
+import { Bicycle, Moon, Plus } from "@element-plus/icons-vue";
 
 const authStore = useAuthStore();
 
@@ -300,7 +608,10 @@ const dateRange = ref([]);
 // 计算平均睡眠时长
 const avgDuration = computed(() => {
   if (sleepRecords.value.length === 0) return 0;
-  const total = sleepRecords.value.reduce((sum, record) => sum + record.duration_hours, 0);
+  const total = sleepRecords.value.reduce(
+    (sum, record) => sum + record.duration_hours,
+    0
+  );
   return (total / sleepRecords.value.length).toFixed(1);
 });
 
@@ -313,7 +624,8 @@ const sleepAdvice = computed(() => {
   if (avgDuration < 7) {
     advice.push({
       title: "睡眠时长不足",
-      description: "您的平均睡眠时长低于推荐标准，建议保持7-9小时睡眠以获得最佳休息效果。",
+      description:
+        "您的平均睡眠时长低于推荐标准，建议保持7-9小时睡眠以获得最佳休息效果。",
       type: "warning",
     });
   } else if (avgDuration > 9) {
@@ -349,30 +661,30 @@ const sleepAdvice = computed(() => {
 
 // 格式化日期时间
 const formatDateTime = (dateTimeStr) => {
-  if (!dateTimeStr) return '-';
+  if (!dateTimeStr) return "-";
   const date = new Date(dateTimeStr);
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
+  return date.toLocaleString("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 };
 
 // 格式化日期
 const formatDate = (dateTimeStr) => {
-  if (!dateTimeStr) return '-';
+  if (!dateTimeStr) return "-";
   const date = new Date(dateTimeStr);
-  return date.toLocaleDateString('zh-CN');
+  return date.toLocaleDateString("zh-CN");
 };
 
 // 获取睡眠时长颜色
 const getDurationColor = (duration) => {
-  if (duration >= 7 && duration <= 9) return 'success';
-  if (duration >= 6 && duration < 7) return 'warning';
-  if (duration > 9) return 'info';
-  return 'danger';
+  if (duration >= 7 && duration <= 9) return "success";
+  if (duration >= 6 && duration < 7) return "warning";
+  if (duration > 9) return "info";
+  return "danger";
 };
 
 // 加载睡眠记录
@@ -414,14 +726,13 @@ const loadSleepStats = async () => {
       average_duration: 0,
       average_quality: 0,
       best_sleep: null,
-      worst_sleep: null
+      worst_sleep: null,
     };
   }
 };
 
 // 添加睡眠记录
 const addSleepRecord = async () => {
-  
   if (!authStore.userId) {
     ElMessage.error("请先登录");
     return;
@@ -464,12 +775,6 @@ const addSleepRecord = async () => {
   }
 };
 
-// 编辑睡眠记录
-const editRecord = (record) => {
-  // 这里可以实现编辑功能，暂时显示提示
-  ElMessage.info("编辑功能开发中...");
-};
-
 // 删除睡眠记录
 const deleteRecord = async (recordId) => {
   try {
@@ -497,6 +802,44 @@ onMounted(async () => {
   await loadSleepRecords();
   await loadSleepStats();
 });
+
+const editDialogVisible = ref(false);
+const editForm = reactive({
+  id: null,
+  sleepTime: null,
+  wakeTime: null,
+  qualityRating: 5,
+  notes: "",
+});
+
+const editRecord = (record) => {
+  editForm.id = record.id;
+  editForm.sleepTime = record.sleep_time;
+  editForm.wakeTime = record.wake_time;
+  editForm.qualityRating = record.quality_rating;
+  editForm.notes = record.notes;
+  editDialogVisible.value = true;
+};
+
+const submitEdit = async () => {
+  try {
+    const updateData = {
+      sleep_time: editForm.sleepTime,
+      wake_time: editForm.wakeTime,
+      quality_rating: editForm.qualityRating,
+      notes: editForm.notes,
+    };
+
+    await updateSleepRecord(editForm.id, updateData);
+    ElMessage.success("记录更新成功");
+    editDialogVisible.value = false;
+    await loadSleepRecords();
+    await loadSleepStats();
+  } catch (error) {
+    ElMessage.error(error.message || "更新失败");
+  }
+};
+
 </script>
 
 <style scoped>

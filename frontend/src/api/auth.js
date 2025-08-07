@@ -48,8 +48,74 @@ export const register = async (userData) => {
     }
 };
 
+// 修改密码
+export const changePassword = async (userData) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/users/change-password`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            // 后端返回的错误信息在 data.msg 中
+            throw new Error(data.msg || '修改密码失败');
+        }
+        return data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+// 删除账户
+export const deleteAccount = async (userData) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/users/delete-account`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            // 后端返回的错误信息在 data.msg 中
+            throw new Error(data.msg || '删除账户失败');
+        }
+        return data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+// 导出数据
+export const exportData = async (userId) => {
+    try {
+        // 在实际应用中，用户ID应从认证令牌中获取，而不是作为查询参数
+        const response = await fetch(`${API_BASE_URL}/users/export-data?userId=${userId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            // 后端返回的错误信息在 data.msg 中
+            throw new Error(data.msg || '数据导出失败');
+        }
+        return data;
+    } catch (error) {
+        throw error;
+    }
+};
+
 // 导出API对象
 export const authApi = {
     login,
-    register
-}; 
+    register,
+    changePassword,
+    deleteAccount,
+    exportData
+};

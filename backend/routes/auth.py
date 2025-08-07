@@ -1,8 +1,10 @@
 # routes/auth.py
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_file
 from models.user import db, User
 from utils.response import success_response, error_response
+import io
+import json
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/users')
 
@@ -68,7 +70,52 @@ def delete_account():
     if not user or not user.check_password(data['password']):
         return error_response(401, "用户名或密码错误")
 
+    # 在删除用户之前，可能需要删除所有关联的数据
+    # 例如：
+    # from models.diet import DietRecord
+    # from models.exercise import ExerciseRecord
+    # from models.sleep import SleepRecord
+    # DietRecord.query.filter_by(user_id=user.id).delete()
+    # ExerciseRecord.query.filter_by(user_id=user.id).delete()
+    # SleepRecord.query.filter_by(user_id=user.id).delete()
+
     db.session.delete(user)
     db.session.commit()
 
     return success_response("账号注销成功")
+
+@auth_bp.route('/export-data', methods=['GET'])
+def export_data():
+    # 在生产环境中，用户ID应从JWT令牌或会话中获取，而不是直接作为查询参数
+    user_id = request.args.get('userId')
+    if not user_id:
+        return error_response(400, "用户ID不能为空")
+
+    user = User.query.get(user_id)
+    if not user:
+        return error_response(404, "用户不存在")
+
+    # 获取用户基本信息
+    user_data = user.to_dict()
+
+    # 在这里，你需要查询并收集所有与该用户相关的健康数据
+    # 假设你还有 DietRecord, ExerciseRecord, SleepRecord 等模型
+    # from models.diet import DietRecord
+    # from models.exercise import ExerciseRecord
+    # from models.sleep import SleepRecord
+
+    # diet_records = [record.to_dict() for record in DietRecord.query.filter_by(user_id=user_id).all()]
+    # exercise_records = [record.to_dict() for record in ExerciseRecord.query.filter_by(user_id=user_id).all()]
+    # sleep_records = [record.to_dict() for record in SleepRecord.query.filter_by(user_id=user_id).all()]
+
+    exported_data = {
+        "user_info": user_data,
+        # "diet_records": diet_records,
+        # "exercise_records": exercise_records,
+        # "sleep_records": sleep_records,
+        "message": "这是用户数据导出示例。在实际应用中，这里会包含所有关联的健康记录。"
+    }
+
+    # 返回JSON数据
+    return success_response("数据导出成功", exported_data)
+
