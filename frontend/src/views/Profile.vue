@@ -18,14 +18,6 @@
 
                     <el-divider style="margin: 16px 0;" />
 
-                    <div class="info-item" style="margin-bottom: 8px;">
-                      <label>注册时间:</label>
-                      <span>{{ registerDate }}</span>
-                    </div>
-                    <div class="info-item" style="margin-bottom: 8px;">
-                      <label>最后登录:</label>
-                      <span>{{ lastLoginDate }}</span>
-                    </div>
                     <div class="info-item">
                       <label>账户状态:</label>
                       <el-tag type="success">正常</el-tag>
@@ -55,11 +47,6 @@
                       <el-col :span="12">
                         <el-form-item label="每日睡眠时长">
                           <el-input-number v-model="healthGoals.dailySleep" :min="6" :max="12" :precision="1" />
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="12">
-                        <el-form-item label="每日饮水量">
-                          <el-input-number v-model="healthGoals.dailyWater" :min="500" :max="5000" />
                         </el-form-item>
                       </el-col>
                     </el-row>
@@ -93,102 +80,6 @@
         </a-row>
       </div>
 
-      <!-- 健康数据概览 -->
-      <div style="background-color: transparent; padding: 20px;">
-        <a-row :gutter="16" style="display: flex;">
-          <a-col :span="24">
-            <a-card title="健康数据概览" style="height: 100%;">
-            <!-- 健康概览 -->
-            <div style="background-color: transparent; padding: 20px;">
-              <a-row :gutter="16" style="display: flex;">
-
-                <!-- 使用天数 -->
-                <a-col :xs="12" :sm="12" :md="6" style="height: 100px;">
-                  <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
-                    <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
-                      <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
-                        <el-icon><Calendar /></el-icon>
-                      </div>
-                      <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
-                        <h4 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                          使用天数
-                        </h4>
-                        <p style="margin: 0; font-weight: bold; font-size: 24px; line-height: 1.4;
-                                  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                          {{ overview.usageDays }} 天
-                        </p>
-                      </div>
-                    </div>
-                  </a-card>
-                </a-col>
-
-                <!-- 记录饮食 -->
-                <a-col :xs="12" :sm="12" :md="6" style="height: 100px;">
-                  <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
-                    <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
-                      <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
-                        <el-icon><Food /></el-icon>
-                      </div>
-                      <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
-                        <h4 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                          记录饮食
-                        </h4>
-                        <p style="margin: 0; font-weight: bold; font-size: 24px; line-height: 1.4;
-                                  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                          {{ overview.dietRecords }} 次
-                        </p>
-                      </div>
-                    </div>
-                  </a-card>
-                </a-col>
-
-                <!-- 记录运动 -->
-                <a-col :xs="12" :sm="12" :md="6" style="height: 100px;">
-                  <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
-                    <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
-                      <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
-                        <el-icon><Bicycle /></el-icon>
-                      </div>
-                      <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
-                        <h4 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                          记录运动
-                        </h4>
-                        <p style="margin: 0; font-weight: bold; font-size: 24px; line-height: 1.4;
-                                  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                          {{ overview.exerciseRecords }} 次
-                        </p>
-                      </div>
-                    </div>
-                  </a-card>
-                </a-col>
-
-                <!-- 记录睡眠 -->
-                <a-col :xs="12" :sm="12" :md="6" style="height: 100px;">
-                  <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
-                    <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
-                      <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
-                        <el-icon><Moon /></el-icon>
-                      </div>
-                      <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
-                        <h4 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                          记录睡眠
-                        </h4>
-                        <p style="margin: 0; font-weight: bold; font-size: 24px; line-height: 1.4;
-                                  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                          {{ overview.sleepRecords }} 次
-                        </p>
-                      </div>
-                    </div>
-                  </a-card>
-                </a-col>
-
-              </a-row>
-            </div>
-
-            </a-card>
-          </a-col>
-        </a-row>
-      </div>
 
       <!-- 账户设置 -->
       <div style="background-color: transparent; padding: 20px;">

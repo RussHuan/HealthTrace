@@ -61,11 +61,11 @@ export const updateSleepRecord = async (recordId, updateData) => {
     });
     
     const data = await response.json();
-    
+
     if (!response.ok) {
       throw new Error(data.message || '更新睡眠记录失败');
     }
-    
+
     return data;
   } catch (error) {
     throw error;

@@ -119,45 +119,7 @@
         </a-row>
       </div>
 
-      <!-- 营养分析 -->
-      <div style="background-color: transparent; padding: 20px;">
-        <a-row :gutter="16" style="display: flex;">
-          <a-col :span="24">
-            <a-card title="营养分析" style="height: 100%;">
-              <el-row :gutter="20">
-                <el-col :span="6">
-                  <div class="nutrition-item">
-                    <div class="nutrition-label">蛋白质</div>
-                    <div class="nutrition-value">{{ nutrition.protein }}g</div>
-                    <el-progress :percentage="nutrition.proteinPercent" />
-                  </div>
-                </el-col>
-                <el-col :span="6">
-                  <div class="nutrition-item">
-                    <div class="nutrition-label">碳水化合物</div>
-                    <div class="nutrition-value">{{ nutrition.carbs }}g</div>
-                    <el-progress :percentage="nutrition.carbsPercent" />
-                  </div>
-                </el-col>
-                <el-col :span="6">
-                  <div class="nutrition-item">
-                    <div class="nutrition-label">脂肪</div>
-                    <div class="nutrition-value">{{ nutrition.fat }}g</div>
-                    <el-progress :percentage="nutrition.fatPercent" />
-                  </div>
-                </el-col>
-                <el-col :span="6">
-                  <div class="nutrition-item">
-                    <div class="nutrition-label">纤维</div>
-                    <div class="nutrition-value">{{ nutrition.fiber }}g</div>
-                    <el-progress :percentage="nutrition.fiberPercent" />
-                  </div>
-                </el-col>
-              </el-row>
-            </a-card>
-          </a-col>
-        </a-row>
-      </div>
+      
     </div>
   </Layout>
 </template>

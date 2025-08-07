@@ -69,7 +69,7 @@
                 </div>
                 <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
                   <h3 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                    运动时长
+                    今日运动时长
                   </h3>
                   <p style="margin: 0; font-weight: bold; font-size: 26px; line-height: 1.4;
                             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
@@ -93,7 +93,7 @@
                 </div>
                 <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
                   <h3 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                    睡眠时长
+                    今日睡眠时长
                   </h3>
                   <p style="margin: 0; font-weight: bold; font-size: 26px; line-height: 1.4;
                             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
@@ -108,29 +108,6 @@
             </a-card>
           </a-col>
 
-          <!-- 饮水量，xs和sm屏隐藏 -->
-          <a-col :xs="0" :sm="0" :md="6" style="height: 140px;" class="hide-sm-xs">
-            <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
-              <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
-                <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
-                  <el-icon><IceDrink /></el-icon>
-                </div>
-                <div style="display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
-                  <h3 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                    饮水量
-                  </h3>
-                  <p style="margin: 0; font-weight: bold; font-size: 26px; line-height: 1.4;
-                            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                    {{ todayWater }} ml
-                  </p>
-                  <p style="margin: 0; color: #888; font-size: 14px; white-space: nowrap;
-                            overflow: hidden; text-overflow: ellipsis;">
-                    目标: 2000 ml
-                  </p>
-                </div>
-              </div>
-            </a-card>
-          </a-col>
         </a-row>
       </div>
 

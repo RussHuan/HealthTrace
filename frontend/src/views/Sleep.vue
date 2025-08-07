@@ -275,7 +275,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Layout from "@/components/Layout.vue";
 import { addSleepRecord as addSleepRecordAPI, getSleepRecords, updateSleepRecord, deleteSleepRecord as deleteSleepRecordAPI, getSleepStats } from "@/api/sleep.js";
@@ -421,6 +421,7 @@ const loadSleepStats = async () => {
 
 // 添加睡眠记录
 const addSleepRecord = async () => {
+  
   if (!authStore.userId) {
     ElMessage.error("请先登录");
     return;
