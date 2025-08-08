@@ -1,12 +1,67 @@
 # routes/auth.py
+from datetime import datetime
 
 from flask import Blueprint, request, jsonify, send_file
+
+from models.diet import Diet
 from models.user import db, User
 from utils.response import success_response, error_response
-import io
-import json
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/users')
+
+def create_sample_diet_record(user_id):
+    from models.diet import MealType
+    sample_record = Diet(
+        user_id=user_id,
+        meal_type=MealType.BREAKFAST,
+        content="示例：鸡蛋 + 面包 + 牛奶",
+        calories=450,
+        date=datetime.utcnow().date()
+    )
+    db.session.add(sample_record)
+    return sample_record
+
+def create_sample_exercise_record(user_id):
+    from models.exercise import Exercise
+    from datetime import datetime, timedelta
+
+    # 构造时间段：当前时间前一小时至现在
+    end_time = datetime.utcnow()
+    start_time = end_time - timedelta(hours=1)
+
+    sample_record = Exercise(
+        user_id=user_id,
+        start_time=start_time,
+        end_time=end_time,
+        duration_mimutes=0,  # 初始为0，后面会计算
+        type="跑步",
+        calories=300,
+        notes="示例：晨跑 1 小时"
+    )
+
+    sample_record.calculate_duration()  # 自动计算 duration_minutes
+    db.session.add(sample_record)
+    return sample_record
+
+def create_sample_sleep_record(user_id):
+    from models.sleep import Sleep
+    from datetime import datetime, timedelta
+
+    # 假设昨晚 23:00 到今早 07:00 的睡眠
+    wake_time = datetime.utcnow().replace(hour=7, minute=0, second=0, microsecond=0)
+    sleep_time = wake_time - timedelta(hours=8)
+
+    sample_record = Sleep(
+        user_id=user_id,
+        sleep_time=sleep_time,
+        wake_time=wake_time,
+        quality_rating=4,
+        notes="示例：睡眠良好"
+    )
+
+    sample_record.calculate_duration()
+    db.session.add(sample_record)
+    return sample_record
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
@@ -21,6 +76,11 @@ def register():
     user = User(username=data['username'])
     user.set_password(data['password'])
     db.session.add(user)
+    db.session.commit()
+
+    create_sample_diet_record(user.id)
+    create_sample_exercise_record(user.id)
+    create_sample_sleep_record(user.id)
     db.session.commit()
 
     return success_response("注册成功")

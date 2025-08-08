@@ -152,13 +152,13 @@
                 </el-table-column>
                 <el-table-column label="操作" width="150">
                   <template #default="scope">
-                    <el-button
-                      type="primary"
-                      size="small"
-                      @click="editRecord(scope.row)"
-                    >
-                      编辑
-                    </el-button>
+<!--                    <el-button-->
+<!--                      type="primary"-->
+<!--                      size="small"-->
+<!--                      @click="editRecord(scope.row)"-->
+<!--                    >-->
+<!--                      编辑-->
+<!--                    </el-button>-->
                     <el-button
                       type="danger"
                       size="small"

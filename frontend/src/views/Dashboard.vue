@@ -37,7 +37,7 @@
       <div style="background-color: transparent; padding: 20px;">
         <a-row :gutter="16" style="display: flex;">
           <!-- 今日卡路里，手机极窄屏时占满一行 -->
-          <a-col :xs="24" :sm="12" :md="6" style="height: 140px;">
+          <a-col :span="8" style="height: 140px;">
             <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
               <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
                 <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
@@ -61,7 +61,7 @@
           </a-col>
 
           <!-- 运动时长，xs屏隐藏 -->
-          <a-col :xs="0" :sm="12" :md="6" style="height: 140px;" class="hide-xs">
+          <a-col :span="8" style="height: 140px;">
             <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
               <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
                 <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
@@ -85,7 +85,7 @@
           </a-col>
 
           <!-- 睡眠时长，xs和sm屏隐藏 -->
-          <a-col :xs="0" :sm="0" :md="6" style="height: 140px;" class="hide-sm-xs">
+          <a-col :span="8" style="height: 140px;">
             <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
               <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
                 <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
