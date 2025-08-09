@@ -1,178 +1,6 @@
 <template>
   <Layout>
     <div class="sleep-page">
-      <!-- 添加睡眠记录 -->
-      <div style="background-color: transparent; padding: 20px">
-        <a-row :gutter="16" style="display: flex">
-          <a-col :span="24">
-            <a-card title="添加睡眠记录" style="height: 100%">
-              <el-form :model="sleepForm" label-width="100px">
-                <el-row :gutter="20">
-                  <el-col :span="8">
-                    <el-form-item label="入睡时间">
-                      <el-date-picker
-                        v-model="sleepForm.sleepTime"
-                        type="datetime"
-                        placeholder="选择入睡时间"
-                        format="YYYY-MM-DD HH:mm"
-                        value-format="YYYY-MM-DDTHH:mm:ss"
-                      />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="起床时间">
-                      <el-date-picker
-                        v-model="sleepForm.wakeTime"
-                        type="datetime"
-                        placeholder="选择起床时间"
-                        format="YYYY-MM-DD HH:mm"
-                        value-format="YYYY-MM-DDTHH:mm:ss"
-                      />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="睡眠质量">
-                      <el-rate
-                        v-model="sleepForm.qualityRating"
-                        :max="10"
-                        show-score
-                        :texts="[
-                          '很差',
-                          '差',
-                          '一般',
-                          '良好',
-                          '很好',
-                          '优秀',
-                          '极好',
-                          '完美',
-                          '卓越',
-                          '理想',
-                        ]"
-                      />
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-
-                <el-row :gutter="20">
-                  <el-col :span="16">
-                    <el-form-item label="备注">
-                      <el-input
-                        v-model="sleepForm.notes"
-                        type="textarea"
-                        placeholder="添加备注信息（可选）"
-                        :rows="2"
-                      />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item>
-                      <el-button
-                        type="primary"
-                        @click="addSleepRecord"
-                        :loading="loading"
-                      >
-                        <el-icon><Plus /></el-icon>
-                        添加记录
-                      </el-button>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-              </el-form>
-            </a-card>
-          </a-col>
-        </a-row>
-      </div>
-
-      <!-- 睡眠记录列表 -->
-      <div style="background-color: transparent; padding: 20px">
-        <a-row :gutter="16" style="display: flex">
-          <a-col :span="24">
-            <a-card title="睡眠记录列表" style="height: 100%">
-              <div class="header-actions">
-                <el-date-picker
-                  v-model="dateRange"
-                  type="daterange"
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  @change="loadSleepRecords"
-                  style="margin-right: 10px"
-                />
-                <el-tag type="success">平均时长: {{ avgDuration }} 小时</el-tag>
-                <el-tag type="info">记录数: {{ sleepRecords.length }}</el-tag>
-              </div>
-              <el-table
-                :data="sleepRecords"
-                style="width: 100%"
-                v-loading="tableLoading"
-              >
-                <el-table-column prop="sleep_time" label="入睡时间" width="160">
-                  <template #default="scope">
-                    {{ formatDateTime(scope.row.sleep_time) }}
-                  </template>
-                </el-table-column>
-                <el-table-column prop="wake_time" label="起床时间" width="160">
-                  <template #default="scope">
-                    {{ formatDateTime(scope.row.wake_time) }}
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  prop="duration_hours"
-                  label="睡眠时长"
-                  width="120"
-                >
-                  <template #default="scope">
-                    <el-tag :type="getDurationColor(scope.row.duration_hours)">
-                      {{ scope.row.duration_hours }} 小时
-                    </el-tag>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  prop="quality_rating"
-                  label="睡眠质量"
-                  width="120"
-                >
-                  <template #default="scope">
-                    <el-rate
-                      v-model="scope.row.quality_rating"
-                      :max="10"
-                      disabled
-                      show-score
-                      text-color="#ff9900"
-                    />
-                  </template>
-                </el-table-column>
-                <el-table-column prop="notes" label="备注" min-width="200">
-                  <template #default="scope">
-                    {{ scope.row.notes || "-" }}
-                  </template>
-                </el-table-column>
-                <el-table-column label="操作" width="150">
-                  <template #default="scope">
-                    <el-button
-                      type="primary"
-                      size="small"
-                      @click="editRecord(scope.row)"
-                    >
-                      编辑
-                    </el-button>
-                    <el-button
-                      type="danger"
-                      size="small"
-                      @click="deleteRecord(scope.row.id)"
-                    >
-                      删除
-                    </el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </a-card>
-          </a-col>
-        </a-row>
-      </div>
-
       <!-- 睡眠统计 -->
       <div style="background-color: transparent; padding: 20px">
         <a-row :gutter="16" style="display: flex">
@@ -507,10 +335,188 @@
         </a-row>
       </div>
 
-      <!-- 新增趋势图区块 -->
-      <div style="margin-top: 30px;">
-        <h2>睡眠时长趋势图</h2>
-        <v-chart :option="chartOption" style="height: 400px; width: 100%;" />
+      <!-- 一周睡眠趋势 -->
+      <div style="background-color: transparent; padding: 20px">
+        <a-row :gutter="16" style="display: flex">
+          <a-col :span="24">
+            <a-card title="一周睡眠趋势" style="height: 100%">
+              <!-- ECharts 容器 -->
+              <div ref="sleepChartRef" style="height: 300px; width: 100%;"></div>
+            </a-card>
+          </a-col>
+        </a-row>
+      </div>
+
+      <!-- 睡眠记录列表 -->
+      <div style="background-color: transparent; padding: 20px">
+        <a-row :gutter="16" style="display: flex">
+          <a-col :span="24">
+            <a-card title="睡眠记录列表" style="height: 100%">
+              <div class="header-actions">
+                <el-date-picker
+                  v-model="dateRange"
+                  type="daterange"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  format="YYYY-MM-DD"
+                  value-format="YYYY-MM-DD"
+                  @change="loadSleepRecords"
+                  style="margin-right: 10px"
+                />
+                <el-tag type="success">平均时长: {{ avgDuration }} 小时</el-tag>
+                <el-tag type="info">记录数: {{ sleepRecords.length }}</el-tag>
+              </div>
+              <el-table
+                :data="sleepRecords"
+                style="width: 100%"
+                v-loading="tableLoading"
+              >
+                <el-table-column prop="sleep_time" label="入睡时间" width="160">
+                  <template #default="scope">
+                    {{ formatDateTime(scope.row.sleep_time) }}
+                  </template>
+                </el-table-column>
+                <el-table-column prop="wake_time" label="起床时间" width="160">
+                  <template #default="scope">
+                    {{ formatDateTime(scope.row.wake_time) }}
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="duration_hours"
+                  label="睡眠时长"
+                  width="120"
+                >
+                  <template #default="scope">
+                    <el-tag :type="getDurationColor(scope.row.duration_hours)">
+                      {{ scope.row.duration_hours }} 小时
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="quality_rating"
+                  label="睡眠质量"
+                  width="120"
+                >
+                  <template #default="scope">
+                    <el-rate
+                      v-model="scope.row.quality_rating"
+                      :max="10"
+                      disabled
+                      show-score
+                      text-color="#ff9900"
+                    />
+                  </template>
+                </el-table-column>
+                <el-table-column prop="notes" label="备注" min-width="200">
+                  <template #default="scope">
+                    {{ scope.row.notes || "-" }}
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作" width="150">
+                  <template #default="scope">
+                    <el-button
+                      type="primary"
+                      size="small"
+                      @click="editRecord(scope.row)"
+                    >
+                      编辑
+                    </el-button>
+                    <el-button
+                      type="danger"
+                      size="small"
+                      @click="deleteRecord(scope.row.id)"
+                    >
+                      删除
+                    </el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </a-card>
+          </a-col>
+        </a-row>
+      </div>
+
+      <!-- 添加睡眠记录 -->
+      <div style="background-color: transparent; padding: 20px">
+        <a-row :gutter="16" style="display: flex">
+          <a-col :span="24">
+            <a-card title="添加睡眠记录" style="height: 100%">
+              <el-form :model="sleepForm" label-width="100px">
+                <el-row :gutter="20">
+                  <el-col :span="8">
+                    <el-form-item label="入睡时间">
+                      <el-date-picker
+                        v-model="sleepForm.sleepTime"
+                        type="datetime"
+                        placeholder="选择入睡时间"
+                        format="YYYY-MM-DD HH:mm"
+                        value-format="YYYY-MM-DDTHH:mm:ss"
+                      />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="起床时间">
+                      <el-date-picker
+                        v-model="sleepForm.wakeTime"
+                        type="datetime"
+                        placeholder="选择起床时间"
+                        format="YYYY-MM-DD HH:mm"
+                        value-format="YYYY-MM-DDTHH:mm:ss"
+                      />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="睡眠质量">
+                      <el-rate
+                        v-model="sleepForm.qualityRating"
+                        :max="10"
+                        show-score
+                        :texts="[
+                          '很差',
+                          '差',
+                          '一般',
+                          '良好',
+                          '很好',
+                          '优秀',
+                          '极好',
+                          '完美',
+                          '卓越',
+                          '理想',
+                        ]"
+                      />
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+
+                <el-row :gutter="20">
+                  <el-col :span="16">
+                    <el-form-item label="备注">
+                      <el-input
+                        v-model="sleepForm.notes"
+                        type="textarea"
+                        placeholder="添加备注信息（可选）"
+                        :rows="2"
+                      />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item>
+                      <el-button
+                        type="primary"
+                        @click="addSleepRecord"
+                        :loading="loading"
+                      >
+                        <el-icon><Plus /></el-icon>
+                        添加记录
+                      </el-button>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </el-form>
+            </a-card>
+          </a-col>
+        </a-row>
       </div>
 
       <!-- 睡眠建议 -->
@@ -583,7 +589,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, reactive } from "vue";
+import { ref, computed, onMounted, reactive, nextTick } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Layout from "@/components/Layout.vue";
 import {
@@ -595,7 +601,9 @@ import {
 } from "@/api/sleep.js";
 import { useAuthStore } from "@/stores/auth.js";
 import { Bicycle, Moon, Plus } from "@element-plus/icons-vue";
-import axios from "axios"
+import * as echarts from "echarts";
+
+let sleepChart = null;
 
 const authStore = useAuthStore();
 
@@ -611,6 +619,7 @@ const sleepStats = ref({});
 const loading = ref(false);
 const tableLoading = ref(false);
 const dateRange = ref([]);
+const sleepChartRef = ref(null);
 
 // 计算平均睡眠时长
 const avgDuration = computed(() => {
@@ -694,6 +703,62 @@ const getDurationColor = (duration) => {
   return "danger";
 };
 
+// 初始化图表
+const initSleepChart = (dates = [], hours = [], isAverageFlags = []) => {
+  const chartDom = sleepChartRef.value;
+  if (!chartDom) return;
+
+  if (!sleepChart) {
+    sleepChart = echarts.init(chartDom);
+    window.addEventListener('resize', () => sleepChart.resize());
+  }
+
+  // 计算最大值，保证最大值至少是10，超过则取最大值的上取整
+  const maxHour = Math.max(...hours);
+  const yAxisMax = maxHour > 10 ? Math.ceil(maxHour) : 10;
+
+  const option = {
+    tooltip: {
+      trigger: 'axis',
+      formatter: params => {
+        const p = params[0];
+        const avgFlag = isAverageFlags[p.dataIndex];
+        return `${p.axisValue}<br/>睡眠时长: ${p.data} 小时` + (avgFlag ? '（无记录，使用平均值）' : '');
+      }
+    },
+    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+    xAxis: { type: 'category', data: dates },
+    yAxis: {
+      type: 'value',
+      name: '小时',
+      min: 0,
+      max: yAxisMax
+    },
+    series: [
+      {
+        name: '睡眠时长',
+        type: 'line',
+        smooth: true,
+        data: hours,
+        symbol: 'circle',
+        symbolSize: 8,
+        itemStyle: {
+          color: params => (isAverageFlags[params.dataIndex] ? '#FFA500' : '#1890ff'), // 平均值点橙色，真实记录蓝色
+        },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: 'rgba(24,144,255,0.5)' },
+            { offset: 1, color: 'rgba(24,144,255,0.1)' }
+          ])
+        }
+      }
+    ]
+  };
+
+  sleepChart.setOption(option);
+};
+
+
 // 加载睡眠记录
 const loadSleepRecords = async () => {
   if (!authStore.userId) {
@@ -719,13 +784,71 @@ const loadSleepRecords = async () => {
   }
 };
 
-// 加载睡眠统计
 const loadSleepStats = async () => {
   if (!authStore.userId) return;
 
   try {
-    const response = await getSleepStats(authStore.userId, 7);
-    sleepStats.value = response.data || {};
+    if (sleepRecords.value && sleepRecords.value.length > 0) {
+      // 按日期排序，找最新日期
+      const sortedRecords = sleepRecords.value.slice().sort((a, b) => new Date(a.sleep_time) - new Date(b.sleep_time));
+      const latestDate = new Date(sortedRecords[sortedRecords.length - 1].sleep_time);
+
+      // 生成最近7天日期数组（从最新日期往前推）
+      const dateList = [];
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(latestDate);
+        d.setDate(d.getDate() - i);
+        dateList.push(d);
+      }
+
+      const formatDate = d => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      };
+
+      // 只筛选最近7天有记录的条目
+      const recent7Records = sortedRecords.filter(r => {
+        const recDate = r.sleep_time.slice(0, 10);
+        return dateList.some(d => formatDate(d) === recDate);
+      });
+
+      // 计算最近7天有记录的平均睡眠时长
+      const totalDuration = recent7Records.reduce((sum, r) => sum + r.duration_hours, 0);
+      const avgDuration = recent7Records.length > 0 ? totalDuration / recent7Records.length : 0;
+
+      // 构造图表数据
+      const dates = [];
+      const hours = [];
+      const isAverageFlags = [];
+
+      dateList.forEach(d => {
+        const dateStr = formatDate(d);
+        // 找最近7天记录中是否有这天的睡眠数据
+        const record = recent7Records.find(r => r.sleep_time.startsWith(dateStr));
+
+        dates.push(d.toLocaleDateString('zh-CN', { weekday: 'short' }));
+        if (record) {
+          hours.push(record.duration_hours);
+          isAverageFlags.push(false);
+        } else {
+          hours.push(parseFloat(avgDuration.toFixed(2)));
+          isAverageFlags.push(true);
+        }
+      });
+
+      initSleepChart(dates, hours, isAverageFlags);
+
+      // 统计数据只用最近7天的记录
+      sleepStats.value = {
+        total_records: recent7Records.length,
+        average_duration: avgDuration,
+        average_quality: 0,
+        best_sleep: recent7Records.reduce((best, cur) => (cur.duration_hours > (best?.duration_hours || 0) ? cur : best), null),
+        worst_sleep: recent7Records.reduce((worst, cur) => (cur.duration_hours < (worst?.duration_hours || Infinity) ? cur : worst), null)
+      };
+    }
   } catch (error) {
     console.error("加载睡眠统计失败:", error);
     sleepStats.value = {
@@ -803,44 +926,6 @@ const deleteRecord = async (recordId) => {
     }
   }
 };
-
-// 统计图
-export default {
-  name: 'Sleep',
-  data() {
-    return {
-      chartOption: {}
-    }
-  },
-  mounted() {
-    this.fetchSleepData()
-  },
-  methods: {
-    async fetchSleepData() {
-      try {
-        const res = await axios.get('/api/sleep/data')
-        const dates = res.data.map(d => d.date)
-        const hours = res.data.map(d => d.hours)
-
-        this.chartOption = {
-          tooltip: { trigger: 'axis' },
-          xAxis: { type: 'category', data: dates },
-          yAxis: { type: 'value', name: '小时' },
-          series: [
-            {
-              type: 'line',
-              data: hours,
-              smooth: true,
-              areaStyle: {}
-            }
-          ]
-        }
-      } catch (err) {
-        console.error('获取睡眠数据失败', err)
-      }
-    }
-  }
-}
 
 // 页面加载时获取数据
 onMounted(async () => {

@@ -1,179 +1,6 @@
 <template>
   <Layout>
     <div class="exercise-page">
-      <!-- 添加运动记录 -->
-      <div style="background-color: transparent; padding: 20px">
-        <a-row :gutter="16" style="display: flex">
-          <a-col :span="24">
-            <a-card title="添加运动记录" style="height: 100%">
-              <el-form :model="exerciseForm" label-width="100px">
-                <el-row :gutter="20">
-                  <el-col :span="8">
-                    <el-form-item label="运动类型">
-                      <el-select
-                        v-model="exerciseForm.type"
-                        placeholder="选择运动类型"
-                      >
-                        <el-option label="跑步" value="running" />
-                        <el-option label="步行" value="walking" />
-                        <el-option label="骑行" value="cycling" />
-                        <el-option label="游泳" value="swimming" />
-                        <el-option label="健身" value="gym" />
-                        <el-option label="瑜伽" value="yoga" />
-                        <el-option label="其他" value="other" />
-                      </el-select>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="开始时间">
-                      <el-date-picker
-                        v-model="exerciseForm.startTime"
-                        type="datetime"
-                        placeholder="选择开始时间"
-                        format="YYYY-MM-DD HH:mm"
-                        value-format="YYYY-MM-DDTHH:mm:ss"
-                      />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="结束时间">
-                      <el-date-picker
-                        v-model="exerciseForm.endTime"
-                        type="datetime"
-                        placeholder="选择结束时间"
-                        format="YYYY-MM-DD HH:mm"
-                        value-format="YYYY-MM-DDTHH:mm:ss"
-                      />
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-
-                <el-row :gutter="20">
-                  <el-col :span="8">
-                    <el-form-item label="消耗卡路里">
-                      <el-input-number
-                        v-model="exerciseForm.calories"
-                        :min="0"
-                        :max="2000"
-                        placeholder="卡路里"
-                      />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="备注">
-                      <el-input
-                        v-model="exerciseForm.notes"
-                        placeholder="添加备注信息（可选）"
-                      />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item>
-                      <el-button
-                        type="primary"
-                        @click="addExerciseRecord"
-                        :loading="loading"
-                      >
-                        <el-icon><Plus /></el-icon>
-                        添加记录
-                      </el-button>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-              </el-form>
-            </a-card>
-          </a-col>
-        </a-row>
-      </div>
-
-      <!-- 运动记录列表 -->
-      <div style="background-color: transparent; padding: 20px">
-        <a-row :gutter="16" style="display: flex">
-          <a-col :span="24">
-            <a-card title="运动记录列表" style="height: 100%">
-              <div class="header-actions">
-                <el-date-picker
-                  v-model="dateRange"
-                  type="daterange"
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  @change="loadExerciseRecords"
-                  style="margin-right: 10px"
-                />
-                <el-tag type="success">总时长: {{ totalDuration }} 分钟</el-tag>
-                <el-tag type="warning">消耗: {{ totalCalories }} kcal</el-tag>
-                <el-tag type="info"
-                  >记录数: {{ exerciseRecords.length }}</el-tag
-                >
-              </div>
-              <el-table
-                :data="exerciseRecords"
-                style="width: 100%"
-                v-loading="tableLoading"
-              >
-                <el-table-column prop="type" label="运动类型" width="120">
-                  <template #default="scope">
-                    <el-tag :type="getExerciseTypeColor(scope.row.type)">
-                      {{ getExerciseTypeLabel(scope.row.type) }}
-                    </el-tag>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="start_time" label="开始时间" width="160">
-                  <template #default="scope">
-                    {{ formatDateTime(scope.row.start_time) }}
-                  </template>
-                </el-table-column>
-                <el-table-column prop="end_time" label="结束时间" width="160">
-                  <template #default="scope">
-                    {{ formatDateTime(scope.row.end_time) }}
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  prop="duration_mimutes"
-                  label="时长"
-                  width="100"
-                >
-                  <template #default="scope">
-                    {{ scope.row.duration_mimutes }} 分钟
-                  </template>
-                </el-table-column>
-                <el-table-column prop="calories" label="消耗卡路里" width="120">
-                  <template #default="scope">
-                    {{ scope.row.calories }} kcal
-                  </template>
-                </el-table-column>
-                <el-table-column prop="notes" label="备注" min-width="200">
-                  <template #default="scope">
-                    {{ scope.row.notes || "-" }}
-                  </template>
-                </el-table-column>
-                <el-table-column label="操作" width="150">
-                  <template #default="scope">
-<!--                    <el-button-->
-<!--                      type="primary"-->
-<!--                      size="small"-->
-<!--                      @click="editRecord(scope.row)"-->
-<!--                    >-->
-<!--                      编辑-->
-<!--                    </el-button>-->
-                    <el-button
-                      type="danger"
-                      size="small"
-                      @click="deleteRecord(scope.row.id)"
-                    >
-                      删除
-                    </el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </a-card>
-          </a-col>
-        </a-row>
-      </div>
-
       <!-- 运动统计 -->
       <div style="background-color: transparent; padding: 20px">
         <a-row :gutter="16" style="display: flex">
@@ -503,6 +330,179 @@
                   </p>
                 </div>
               </div>
+            </a-card>
+          </a-col>
+        </a-row>
+      </div>
+
+      <!-- 运动记录列表 -->
+      <div style="background-color: transparent; padding: 20px">
+        <a-row :gutter="16" style="display: flex">
+          <a-col :span="24">
+            <a-card title="运动记录列表" style="height: 100%">
+              <div class="header-actions">
+                <el-date-picker
+                  v-model="dateRange"
+                  type="daterange"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  format="YYYY-MM-DD"
+                  value-format="YYYY-MM-DD"
+                  @change="loadExerciseRecords"
+                  style="margin-right: 10px"
+                />
+                <el-tag type="success">总时长: {{ totalDuration }} 分钟</el-tag>
+                <el-tag type="warning">消耗: {{ totalCalories }} kcal</el-tag>
+                <el-tag type="info"
+                  >记录数: {{ exerciseRecords.length }}</el-tag
+                >
+              </div>
+              <el-table
+                :data="exerciseRecords"
+                style="width: 100%"
+                v-loading="tableLoading"
+              >
+                <el-table-column prop="type" label="运动类型" width="120">
+                  <template #default="scope">
+                    <el-tag :type="getExerciseTypeColor(scope.row.type)">
+                      {{ getExerciseTypeLabel(scope.row.type) }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="start_time" label="开始时间" width="160">
+                  <template #default="scope">
+                    {{ formatDateTime(scope.row.start_time) }}
+                  </template>
+                </el-table-column>
+                <el-table-column prop="end_time" label="结束时间" width="160">
+                  <template #default="scope">
+                    {{ formatDateTime(scope.row.end_time) }}
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="duration_mimutes"
+                  label="时长"
+                  width="100"
+                >
+                  <template #default="scope">
+                    {{ scope.row.duration_mimutes }} 分钟
+                  </template>
+                </el-table-column>
+                <el-table-column prop="calories" label="消耗卡路里" width="120">
+                  <template #default="scope">
+                    {{ scope.row.calories }} kcal
+                  </template>
+                </el-table-column>
+                <el-table-column prop="notes" label="备注" min-width="200">
+                  <template #default="scope">
+                    {{ scope.row.notes || "-" }}
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作" width="150">
+                  <template #default="scope">
+<!--                    <el-button-->
+<!--                      type="primary"-->
+<!--                      size="small"-->
+<!--                      @click="editRecord(scope.row)"-->
+<!--                    >-->
+<!--                      编辑-->
+<!--                    </el-button>-->
+                    <el-button
+                      type="danger"
+                      size="small"
+                      @click="deleteRecord(scope.row.id)"
+                    >
+                      删除
+                    </el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </a-card>
+          </a-col>
+        </a-row>
+      </div>
+
+      <!-- 添加运动记录 -->
+      <div style="background-color: transparent; padding: 20px">
+        <a-row :gutter="16" style="display: flex">
+          <a-col :span="24">
+            <a-card title="添加运动记录" style="height: 100%">
+              <el-form :model="exerciseForm" label-width="100px">
+                <el-row :gutter="20">
+                  <el-col :span="8">
+                    <el-form-item label="运动类型">
+                      <el-select
+                        v-model="exerciseForm.type"
+                        placeholder="选择运动类型"
+                      >
+                        <el-option label="跑步" value="running" />
+                        <el-option label="步行" value="walking" />
+                        <el-option label="骑行" value="cycling" />
+                        <el-option label="游泳" value="swimming" />
+                        <el-option label="健身" value="gym" />
+                        <el-option label="瑜伽" value="yoga" />
+                        <el-option label="其他" value="other" />
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="开始时间">
+                      <el-date-picker
+                        v-model="exerciseForm.startTime"
+                        type="datetime"
+                        placeholder="选择开始时间"
+                        format="YYYY-MM-DD HH:mm"
+                        value-format="YYYY-MM-DDTHH:mm:ss"
+                      />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="结束时间">
+                      <el-date-picker
+                        v-model="exerciseForm.endTime"
+                        type="datetime"
+                        placeholder="选择结束时间"
+                        format="YYYY-MM-DD HH:mm"
+                        value-format="YYYY-MM-DDTHH:mm:ss"
+                      />
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+
+                <el-row :gutter="20">
+                  <el-col :span="8">
+                    <el-form-item label="消耗卡路里">
+                      <el-input-number
+                        v-model="exerciseForm.calories"
+                        :min="0"
+                        :max="2000"
+                        placeholder="卡路里"
+                      />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="备注">
+                      <el-input
+                        v-model="exerciseForm.notes"
+                        placeholder="添加备注信息（可选）"
+                      />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item>
+                      <el-button
+                        type="primary"
+                        @click="addExerciseRecord"
+                        :loading="loading"
+                      >
+                        <el-icon><Plus /></el-icon>
+                        添加记录
+                      </el-button>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </el-form>
             </a-card>
           </a-col>
         </a-row>

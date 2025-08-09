@@ -107,32 +107,90 @@
               </div>
             </a-card>
           </a-col>
-
         </a-row>
       </div>
 
-      <!-- 图表区域 -->
+      <!-- 健康周报 -->
       <div style="background-color: transparent; padding: 20px;">
         <a-row :gutter="16" style="display: flex;">
-          <a-col :span="12" style="height: 300px;">
-            <a-card :loading="chartLoading" title="本周卡路里摄入" style="height: 100%;">
-              <template #extra><router-link to="/diet">详情</router-link></template>
-              <div v-if="!chartLoading" style="height: 200px; display: flex; align-items: center; justify-content: center;">
-                <p>本周总摄入: {{ weeklyCalories }} kcal</p>
-              </div>
-            </a-card>
-          </a-col>
+          <a-col :span="24">
+            <a-card :bordered="false" style="height: 100%; padding: 20px;">
+              <template #title>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span>健康周报</span>
+                  <a-button size="small" type="primary" @click="dialogVisible = true">
+                    配置AI参数
+                  </a-button>
+                </div>
+              </template>
 
-          <a-col :span="12" style="height: 300px;">
-            <a-card :loading="chartLoading" title="运动趋势" style="height: 100%;">
-              <template #extra><router-link to="/exercise">详情</router-link></template>
-              <div v-if="!chartLoading" style="height: 200px; display: flex; align-items: center; justify-content: center;">
-                <p>本周运动时长: {{ weeklyExercise }} 分钟</p>
+              <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 24px;">
+                <div style="flex: 1; min-width: 180px; text-align: center;">
+                  <h3>本周总摄入</h3>
+                  <p style="font-size: 24px; font-weight: bold;">{{ weeklyCalories }} kcal</p>
+                </div>
+                <div style="flex: 1; min-width: 180px; text-align: center;">
+                  <h3>本周运动时长</h3>
+                  <p style="font-size: 24px; font-weight: bold;">{{ weeklyExercise }} 分钟</p>
+                </div>
+                <div style="flex: 1; min-width: 180px; text-align: center;">
+                  <h3>本周平均睡眠</h3>
+                  <p style="font-size: 24px; font-weight: bold;">{{ weeklySleep }} 小时</p>
+                </div>
+              </div>
+
+              <div style="margin-top: 24px; color: #555;">
+                <h4 style="display: flex; align-items: center; gap: 8px;">
+                  健康建议
+                  <span style="font-size: 14px; color: #999;">（来源：<a :href="apiUrl" target="_blank" style="color:#1890ff;">{{ apiUrl }}</a>）</span>
+                </h4>
+                <p v-if="llmAdvice" style="font-size: 16px; line-height: 1.5;">{{ llmAdvice }}</p>
+                <p v-else style="font-size: 16px; color: #999;">正在加载建议...</p>
+                <p style="margin-top: 8px; font-size: 12px; color: #d9534f;">
+                  ⚠️ AI 提供的信息仅供参考，请结合实际情况甄别判断。
+                </p>
               </div>
             </a-card>
           </a-col>
         </a-row>
       </div>
+
+      <!-- 配置弹窗保持不变 -->
+      <a-modal
+        v-model:visible="dialogVisible"
+        title="AI接口配置"
+        ok-text="保存"
+        cancel-text="取消"
+        @ok="saveConfig"
+      >
+        <a-form layout="vertical">
+          <a-form-item label="LLM API地址">
+            <a-input
+              v-model:value="tempApiUrl"
+              placeholder="请输入LLM接口地址"
+              allow-clear
+            />
+          </a-form-item>
+
+          <a-form-item label="API Key">
+            <a-input
+              v-model:value="tempApiKey"
+              placeholder="请输入API Key"
+              type="password"
+              allow-clear
+            />
+          </a-form-item>
+
+          <a-form-item label="模型名称">
+            <a-input
+              v-model:value="tempModel"
+              placeholder="例如 gpt-4o-mini"
+              allow-clear
+            />
+          </a-form-item>
+        </a-form>
+      </a-modal>
+
 
       <!-- 快速操作 -->
       <div style="background-color: transparent; padding: 20px;">
@@ -181,7 +239,84 @@ const lastNightSleep = ref(0);
 const todayWater = ref(0);
 const weeklyCalories = ref(0);
 const weeklyExercise = ref(0);
+const weeklySleep = ref(0);  // 新增响应式变量
 const chartLoading = ref(true);
+const llmAdvice = ref('');
+const dialogVisible = ref(false);
+const tempApiKey = ref('');         // 临时存储输入的API Key
+const apiKey = ref(''); // 默认值或本地存储读取
+const tempModel = ref('gpt-4o-mini');
+const model = ref('gpt-4o-mini');
+const tempApiUrl = ref('https://api.chatanywhere.tech/v1/chat/completions'); // 配置弹窗输入
+const apiUrl = ref('https://api.chatanywhere.tech/v1/chat/completions');     // 默认值
+
+function createPrompt(calories, exercise, sleep) {
+  return `你是一名健康顾问。请根据以下每周数据生成简短的健康建议：
+- 每周摄入热量：${calories} kcal
+- 每周运动时长：${exercise} 分钟
+- 每周平均睡眠时长：${sleep} 小时
+请给出具体且易懂的建议。`;
+}
+
+function saveConfig() {
+  if (tempApiKey.value.trim()) {
+    apiKey.value = tempApiKey.value.trim();
+    localStorage.setItem('apiKey', apiKey.value);
+  }
+  if (tempModel.value.trim()) {
+    model.value = tempModel.value.trim();
+    localStorage.setItem('model', model.value);
+  }
+  if (tempApiUrl.value.trim()) {
+    apiUrl.value = tempApiUrl.value.trim();
+    localStorage.setItem('apiUrl', apiUrl.value);
+  }
+  dialogVisible.value = false;
+
+  // 配置变更后重新拉取建议
+  loadLlmAdvice();
+}
+
+async function fetchAdvice(calories, exercise, sleep) {
+  const prompt = createPrompt(calories, exercise, sleep);
+
+  try {
+    const fetchPromise = fetch(apiUrl.value, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey.value}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: model.value,
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 500
+      })
+    });
+
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('请求超时')), 10000)
+    );
+
+    const response = await Promise.race([fetchPromise, timeoutPromise]);
+
+    if (!response.ok) {
+      throw new Error(`API请求失败，状态码：${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.choices?.[0]?.message?.content) {
+      llmAdvice.value = data.choices[0].message.content;
+    } else {
+      llmAdvice.value = '暂无建议';
+    }
+  } catch (error) {
+    console.error("fetchAdvice 出错:", error);
+    llmAdvice.value = '无法加载建议，请稍后重试。';
+  }
+}
+
 
 // 加载统计数据
 const loadDashboardData = async () => {
@@ -192,46 +327,69 @@ const loadDashboardData = async () => {
 
   chartLoading.value = true;
   try {
-    // 并行加载所有统计数据
+    // 并行加载今日统计数据
     const [dietStats, exerciseStats, sleepStats] = await Promise.all([
       getDietStats(authStore.userId, 1).catch(() => ({ data: { total_calories: 0 } })),
       getExerciseStats(authStore.userId, 1).catch(() => ({ data: { average_duration: 0, total_calories: 0 } })),
       getSleepStats(authStore.userId, 1).catch(() => ({ data: { average_duration: 0 } }))
     ]);
 
-    // 设置今日数据
     todayCalories.value = dietStats.data?.total_calories || 0;
     todayExercise.value = Math.round(exerciseStats.data?.average_duration || 0);
     lastNightSleep.value = sleepStats.data?.average_duration || 0;
-    todayWater.value = 1800; // 暂时使用固定值
+    todayWater.value = 1800;
 
-    // 加载本周数据
-    const [weeklyDietStats, weeklyExerciseStats] = await Promise.all([
+    // 并行加载本周统计数据
+    const [weeklyDietStats, weeklyExerciseStats, weeklySleepStats] = await Promise.all([
       getDietStats(authStore.userId, 7).catch(() => ({ data: { total_calories: 0 } })),
-      getExerciseStats(authStore.userId, 7).catch(() => ({ data: { average_duration: 0, total_calories: 0 } }))
+      getExerciseStats(authStore.userId, 7).catch(() => ({ data: { average_duration: 0, total_calories: 0 } })),
+      getSleepStats(authStore.userId, 7).catch(() => ({ data: { average_duration: 0 } }))
     ]);
 
     weeklyCalories.value = weeklyDietStats.data?.total_calories || 0;
     weeklyExercise.value = Math.round(weeklyExerciseStats.data?.average_duration || 0);
-
+    weeklySleep.value = weeklySleepStats.data?.average_duration || 0;
+    await loadLlmAdvice();
   } catch (error) {
     console.error("加载仪表盘数据失败:", error);
     ElMessage.error("加载数据失败");
-    // 设置默认值
     todayCalories.value = 0;
     todayExercise.value = 0;
     lastNightSleep.value = 0;
     todayWater.value = 1800;
     weeklyCalories.value = 0;
     weeklyExercise.value = 0;
+    weeklySleep.value = 0;
   } finally {
     chartLoading.value = false;
   }
 };
 
+// 独立加载 LLM 建议
+const loadLlmAdvice = async () => {
+  try {
+    // 这里根据你的实现调用 fetchAdvice，传入最新的周统计数据
+    await fetchAdvice(weeklyCalories.value, weeklyExercise.value, weeklySleep.value);
+  } catch (error) {
+    console.error("加载健康建议失败:", error);
+    llmAdvice.value = '无法加载建议，请稍后重试。';
+  }
+};
+
 onMounted(() => {
-  loadDashboardData();
+  const savedKey = localStorage.getItem('apiKey');
+  if (savedKey) apiKey.value = savedKey;
+
+  const savedModel = localStorage.getItem('model');
+  if (savedModel) model.value = savedModel;
+
+  // 初始化临时输入框
+  tempApiKey.value = apiKey.value;
+  tempModel.value = model.value;
+
+  loadDashboardData();  // 这里改成加载数据
 });
+
 </script>
 
 <style scoped>
