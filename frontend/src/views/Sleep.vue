@@ -507,6 +507,12 @@
         </a-row>
       </div>
 
+      <!-- 新增趋势图区块 -->
+      <div style="margin-top: 30px;">
+        <h2>睡眠时长趋势图</h2>
+        <v-chart :option="chartOption" style="height: 400px; width: 100%;" />
+      </div>
+
       <!-- 睡眠建议 -->
       <div style="background-color: transparent; padding: 20px">
         <a-row :gutter="16" style="display: flex">
@@ -589,6 +595,7 @@ import {
 } from "@/api/sleep.js";
 import { useAuthStore } from "@/stores/auth.js";
 import { Bicycle, Moon, Plus } from "@element-plus/icons-vue";
+import axios from "axios"
 
 const authStore = useAuthStore();
 
@@ -796,6 +803,44 @@ const deleteRecord = async (recordId) => {
     }
   }
 };
+
+// 统计图
+export default {
+  name: 'Sleep',
+  data() {
+    return {
+      chartOption: {}
+    }
+  },
+  mounted() {
+    this.fetchSleepData()
+  },
+  methods: {
+    async fetchSleepData() {
+      try {
+        const res = await axios.get('/api/sleep/data')
+        const dates = res.data.map(d => d.date)
+        const hours = res.data.map(d => d.hours)
+
+        this.chartOption = {
+          tooltip: { trigger: 'axis' },
+          xAxis: { type: 'category', data: dates },
+          yAxis: { type: 'value', name: '小时' },
+          series: [
+            {
+              type: 'line',
+              data: hours,
+              smooth: true,
+              areaStyle: {}
+            }
+          ]
+        }
+      } catch (err) {
+        console.error('获取睡眠数据失败', err)
+      }
+    }
+  }
+}
 
 // 页面加载时获取数据
 onMounted(async () => {
