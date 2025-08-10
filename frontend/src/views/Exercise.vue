@@ -335,6 +335,57 @@
         </a-row>
       </div>
 
+      <!-- 智能饮食推荐卡片 -->
+      <div style="background-color: transparent; padding: 20px">
+        <a-row :gutter="16" style="display: flex">
+          <a-col :span="24">
+            <a-card :bordered="false" style="min-height: 220px;">
+              <template #title>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span>
+                    智能饮食推荐
+                    <span style="font-size: 14px; color: #999;">（来源：<a :href="dietApiUrl" target="_blank" style="color:#1890ff;">{{ dietApiUrl }}</a>）</span>
+                  </span>
+                  <a-button size="small" type="primary" @click="openDietConfig">
+                    配置AI参数
+                  </a-button>
+                </div>
+              </template>
+
+              <div style="color: #555; min-height: 120px; white-space: pre-line; font-size: 16px; line-height: 1.5;">
+                <p v-if="dietAdvice">{{ dietAdvice }}</p>
+                <p v-else style="color: #999;">正在根据运动数据生成饮食推荐...</p>
+              </div>
+
+              <p style="margin-top: 8px; font-size: 12px; color: #d9534f;">
+                ⚠️ AI 推荐仅供参考，请结合实际情况判断。
+              </p>
+            </a-card>
+          </a-col>
+        </a-row>
+      </div>
+
+      <!-- 智能饮食推荐的AI配置弹窗 -->
+      <a-modal
+        v-model:visible="dietDialogVisible"
+        title="AI接口配置"
+        ok-text="保存"
+        cancel-text="取消"
+        @ok="saveDietConfig"
+      >
+        <a-form layout="vertical">
+          <a-form-item label="LLM API地址">
+            <a-input v-model:value="tempDietApiUrl" placeholder="请输入LLM接口地址" allow-clear />
+          </a-form-item>
+          <a-form-item label="API Key">
+            <a-input v-model:value="tempDietApiKey" placeholder="请输入API Key" type="password" allow-clear />
+          </a-form-item>
+          <a-form-item label="模型名称">
+            <a-input v-model:value="tempDietModel" placeholder="例如 gpt-4o-mini" allow-clear />
+          </a-form-item>
+        </a-form>
+      </a-modal>
+
       <!-- 运动记录列表 -->
       <div style="background-color: transparent; padding: 20px">
         <a-row :gutter="16" style="display: flex">
@@ -570,7 +621,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import {ref, computed, onMounted, watch} from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Layout from "@/components/Layout.vue";
 import { HotWater, Plus, Timer, Calendar, Star } from "@element-plus/icons-vue";
@@ -598,6 +649,24 @@ const exerciseStats = ref({});
 const loading = ref(false);
 const tableLoading = ref(false);
 const dateRange = ref([]);
+
+const dietDialogVisible = ref(false);
+
+const tempDietApiUrl = ref("");
+const tempDietApiKey = ref("");
+const tempDietModel = ref("");
+
+const dietAdvice = ref('');
+const dietApiKey = ref('');      // 你的API Key
+const dietApiUrl = ref('https://api.chatanywhere.tech/v1/chat/completions');  // 接口地址
+const dietModel = ref('gpt-4o-mini');  // 模型名
+
+const openDietConfig = () => {
+  tempDietApiUrl.value = dietApiUrl.value;
+  tempDietApiKey.value = dietApiKey.value;
+  tempDietModel.value = dietModel.value;
+  dietDialogVisible.value = true;
+};
 
 // 计算总时长和总卡路里
 const totalDuration = computed(() => {
@@ -776,10 +845,101 @@ const getExerciseTypeLabel = (type) => {
   return labels[type] || type;
 };
 
-// 页面加载时获取数据
-onMounted(async () => {
-  await loadExerciseRecords();
-  await loadExerciseStats();
+// 监听运动统计变化，自动刷新饮食推荐
+watch(
+  () => exerciseStats.value,
+  async (newStats) => {
+    if (newStats && dietApiUrl.value && dietApiKey.value && dietModel.value) {
+      await loadDietAdvice(newStats);
+    }
+  },
+  { immediate: true }
+);
+
+function createDietPrompt(stats) {
+  return `你是饮食专家，请根据以下运动统计数据推荐合理的饮食计划，包含主要营养素摄入建议：
+- 总运动时长：${stats.average_duration || 0} 分钟
+- 总消耗卡路里：${stats.total_calories || 0} 千卡
+- 备注：请给出具体且科学的饮食建议。`;
+}
+
+async function loadDietAdvice(stats) {
+  if (!dietApiKey.value) {
+    dietAdvice.value = '请先配置饮食推荐API Key';
+    return;
+  }
+
+  dietAdvice.value = '';
+
+  const prompt = createDietPrompt(stats);
+
+  try {
+    const fetchPromise = fetch(dietApiUrl.value, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${dietApiKey.value}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: dietModel.value,
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 1000,
+      }),
+    });
+
+    // 设置超时10秒
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('请求超时')), 10000)
+    );
+
+    const response = await Promise.race([fetchPromise, timeoutPromise]);
+
+    if (!response.ok) {
+      throw new Error(`接口请求失败，状态码：${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.choices?.[0]?.message?.content) {
+      dietAdvice.value = data.choices[0].message.content.trim();
+    } else {
+      dietAdvice.value = '暂无饮食建议';
+    }
+  } catch (error) {
+    console.error("loadDietAdvice 出错:", error);
+    dietAdvice.value = '获取饮食建议失败，请检查API配置或稍后重试。';
+    ElMessage.error(dietAdvice.value);
+  }
+}
+
+function saveDietConfig() {
+  dietApiUrl.value = tempDietApiUrl.value.trim();
+  dietApiKey.value = tempDietApiKey.value.trim();
+  dietModel.value = tempDietModel.value.trim();
+
+  localStorage.setItem('dietApiKey', dietApiKey.value);
+  localStorage.setItem('dietApiUrl', dietApiUrl.value);
+  localStorage.setItem('dietModel', dietModel.value);
+
+  dietDialogVisible.value = false;
+
+  if (exerciseStats.value) {
+    loadDietAdvice(exerciseStats.value);
+  }
+}
+
+onMounted(() => {
+  tempDietApiKey.value = localStorage.getItem('dietApiKey') || '';
+  dietApiKey.value = tempDietApiKey.value;
+
+  tempDietApiUrl.value = localStorage.getItem('dietApiUrl') || 'https://api.chatanywhere.tech/v1/chat/completions';
+  dietApiUrl.value = tempDietApiUrl.value;
+
+  tempDietModel.value = localStorage.getItem('dietModel') || 'gpt-4o-mini';
+  dietModel.value = tempDietModel.value;
+
+  loadExerciseRecords();
+  loadExerciseStats();
 });
 
 

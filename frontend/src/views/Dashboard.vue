@@ -36,10 +36,24 @@
       <!-- 统计卡片 -->
       <div style="background-color: transparent; padding: 20px;">
         <a-row :gutter="16" style="display: flex;">
-          <!-- 今日卡路里，手机极窄屏时占满一行 -->
+          <!-- 今日卡路里 -->
           <a-col :span="8" style="height: 140px;">
-            <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
-              <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
+            <a-card
+              :bordered="false"
+              style="height: 100%"
+              :bodyStyle="{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                minWidth: 0,
+                height: '100%',
+                padding: '0 12px',
+                gap: '8px'
+              }"
+            >
+              <!-- 左侧内容 -->
+              <div style="display: flex; align-items: center; flex: 1; min-width: 0;">
                 <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
                   <el-icon><Food /></el-icon>
                 </div>
@@ -57,13 +71,37 @@
                   </p>
                 </div>
               </div>
+
+              <!-- 右侧圆环 -->
+              <a-progress
+                type="circle"
+                :percent="Math.min((todayCalories / 2000) * 100, 100)"
+                :width="60"
+                :strokeWidth="8"
+                strokeColor="#1890ff"
+                style="flex-shrink: 0; margin-left: 12px;"
+              />
             </a-card>
           </a-col>
 
-          <!-- 运动时长，xs屏隐藏 -->
+          <!-- 今日运动时长 -->
           <a-col :span="8" style="height: 140px;">
-            <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
-              <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
+            <a-card
+              :bordered="false"
+              style="height: 100%"
+              :bodyStyle="{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                minWidth: 0,
+                height: '100%',
+                padding: '0 12px',
+                gap: '8px'
+              }"
+            >
+              <!-- 左侧内容 -->
+              <div style="display: flex; align-items: center; flex: 1; min-width: 0;">
                 <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
                   <el-icon><Bicycle /></el-icon>
                 </div>
@@ -81,13 +119,37 @@
                   </p>
                 </div>
               </div>
+
+              <!-- 右侧圆环 -->
+              <a-progress
+                type="circle"
+                :percent="Math.min((todayExercise / 30) * 100, 100)"
+                :width="60"
+                :strokeWidth="8"
+                strokeColor="#1890ff"
+                style="flex-shrink: 0; margin-left: 12px;"
+              />
             </a-card>
           </a-col>
 
-          <!-- 睡眠时长，xs和sm屏隐藏 -->
+          <!-- 今日睡眠时长 -->
           <a-col :span="8" style="height: 140px;">
-            <a-card :bordered="false" style="height: 100%; display: flex; align-items: center; min-width: 0;">
-              <div style="display: flex; align-items: center; width: 100%; min-width: 0;">
+            <a-card
+              :bordered="false"
+              style="height: 100%"
+              :bodyStyle="{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                minWidth: 0,
+                height: '100%',
+                padding: '0 12px',
+                gap: '8px'
+              }"
+            >
+              <!-- 左侧内容 -->
+              <div style="display: flex; align-items: center; flex: 1; min-width: 0;">
                 <div style="font-size: 32px; color: #1890ff; margin-right: 12px; flex-shrink: 0;">
                   <el-icon><Moon /></el-icon>
                 </div>
@@ -105,6 +167,16 @@
                   </p>
                 </div>
               </div>
+
+              <!-- 右侧圆环 -->
+              <a-progress
+                type="circle"
+                :percent="Math.min((lastNightSleep / 8) * 100, 100)"
+                :width="60"
+                :strokeWidth="8"
+                strokeColor="#1890ff"
+                style="flex-shrink: 0; margin-left: 12px;"
+              />
             </a-card>
           </a-col>
         </a-row>

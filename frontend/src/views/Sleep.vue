@@ -62,7 +62,7 @@
                       text-overflow: ellipsis;
                     "
                   >
-                    {{ sleepStats.average_duration || 0 }} 小时
+                    {{ (isFinite(sleepStats.average_duration) ? sleepStats.average_duration : 0).toFixed(2) }} 小时
                   </p>
                   <p
                     style="
